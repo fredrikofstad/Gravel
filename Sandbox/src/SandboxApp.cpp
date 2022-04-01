@@ -13,8 +13,8 @@ public:
 	}
 };
 
-int main() 
-{
-	Sandbox* sandbox = new Sandbox();
 
+Gravel::Application* Gravel::CreateApplication()
+{
+	return new Sandbox();
 }

@@ -13,4 +13,7 @@ namespace Gravel {
 		void Run();
 	};
 
+	//defined in client
+	Application* CreateApplication();
+
 }

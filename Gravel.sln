@@ -7,8 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sandbox", "Sandbox\Sandbox.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gravel", "Gravel\Gravel.vcxproj", "{1C6955F7-71B0-4551-81BB-F6B9F09D6D46}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests\Tests.vcxproj", "{7770C883-B7E8-45E8-8D48-13560A412938}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -23,10 +21,6 @@ Global
 		{1C6955F7-71B0-4551-81BB-F6B9F09D6D46}.Debug|x64.Build.0 = Debug|x64
 		{1C6955F7-71B0-4551-81BB-F6B9F09D6D46}.Release|x64.ActiveCfg = Release|x64
 		{1C6955F7-71B0-4551-81BB-F6B9F09D6D46}.Release|x64.Build.0 = Release|x64
-		{7770C883-B7E8-45E8-8D48-13560A412938}.Debug|x64.ActiveCfg = Debug|x64
-		{7770C883-B7E8-45E8-8D48-13560A412938}.Debug|x64.Build.0 = Debug|x64
-		{7770C883-B7E8-45E8-8D48-13560A412938}.Release|x64.ActiveCfg = Release|x64
-		{7770C883-B7E8-45E8-8D48-13560A412938}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
