@@ -1,5 +1,6 @@
 workspace "Gravel"
 	architecture "x64"
+	startproject "Sandbox"
 
 	configurations
 	{
@@ -27,6 +28,7 @@ project "Gravel"
 	includedirs
 	{
 		"%{prj.name}/vendor/spdlog/include",
+		"%{prj.name}/src",
 	}
 
 	filter "system:windows"
