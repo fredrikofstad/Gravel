@@ -2,8 +2,6 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace Gravel {
 
 	class GRAVEL_API KeyEvent : public Event

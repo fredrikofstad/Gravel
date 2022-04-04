@@ -19,6 +19,9 @@ project "Gravel"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
+	pchheader "grpch.h"
+	pchsource "Gravel/src/grpch.cpp"
+
 	files
 	{
 		"%{prj.name}/src/**.h",
