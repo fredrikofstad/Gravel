@@ -2,6 +2,7 @@
 
 #include "Core.h"
 #include "Events/Event.h"
+#include "Window.h"
 
 namespace Gravel {
 
@@ -12,6 +13,9 @@ namespace Gravel {
 		virtual ~Application();
 
 		void Run();
+	private:
+		std::unique_ptr<Window> m_window;
+		bool m_running = true;
 	};
 
 	//defined in client

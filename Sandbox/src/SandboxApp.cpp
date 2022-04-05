@@ -1,5 +1,4 @@
 #include <Gravel.h>
-
 class Sandbox : public Gravel::Application
 {
 public:

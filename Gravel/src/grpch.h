@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Engine/Log.h"
+#include "Engine/Core.h"
+
 #include <iostream>
 #include <memory>
 #include <utility>

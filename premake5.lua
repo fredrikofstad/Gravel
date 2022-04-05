@@ -11,6 +11,12 @@ workspace "Gravel"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+IncludeDir = {}
+IncludeDir["GLWF"] = "Gravel/vendor/GLFW/include"
+
+include "Gravel/vendor/GLFW"
+
+
 project "Gravel"
 	location "Gravel"
 	kind "SharedLib"
@@ -32,6 +38,14 @@ project "Gravel"
 	{
 		"%{prj.name}/vendor/spdlog/include",
 		"%{prj.name}/src",
+		"%{prj.name}/vendor/GLFW/include",
+		--"%{IncludeDir.GLFW}"
+	}
+
+	links
+	{
+		"GLFW",
+		"opengl32.lib"
 	}
 
 	filter "system:windows"
@@ -52,10 +66,14 @@ project "Gravel"
 
 	filter "configurations:Debug"
 		defines "GR_DEBUG"
+		runtime "Debug"
+        buildoptions "/MTd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "GR_RELEASE"
+		runtime "Release"
+        buildoptions "/MT"
 		optimize "On"
 
 	filter "configurations:Distribution"
