@@ -9,14 +9,22 @@
 
 namespace Gravel {
 
+#define BIND_EVENT(x) std::bind(&x, this, std::placeholders::_1)
+
 	Application::Application()
 	{
 		// self deleting when out of scope
 		m_window = std::unique_ptr<Window>(Window::Create());
+		m_window->SetEventCallback(BIND_EVENT(Application::OnEvent));
 	}
 
 	Application::~Application()
 	{
+	}
+
+	void Application::OnEvent(Event& event)
+	{
+		GR_CORE_INFO("{0}", event);
 	}
 
 	void Application::Run()
