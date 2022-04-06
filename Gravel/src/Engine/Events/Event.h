@@ -54,7 +54,7 @@ namespace Gravel {
 	class EventDispatcher
 	{
 		template<typename T>
-		using EventFn = std::function<bool>(T&);
+		using EventFn = std::function<bool(T&)>;
 	public:
 		EventDispatcher(Event& event)
 			: m_event(event) {}

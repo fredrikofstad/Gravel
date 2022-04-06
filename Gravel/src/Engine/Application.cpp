@@ -1,7 +1,6 @@
 #include "grpch.h"
 #include "Application.h"
 
-#include "Engine/Events/ApplicationEvent.h"
 #include "Engine/Log.h"
 
 //for testing
@@ -24,7 +23,10 @@ namespace Gravel {
 
 	void Application::OnEvent(Event& event)
 	{
-		GR_CORE_INFO("{0}", event);
+		EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT(Application::OnWindowClose));
+
+		GR_CORE_TRACE("{0}", event);
 	}
 
 	void Application::Run()
@@ -35,5 +37,10 @@ namespace Gravel {
 			glClear(GL_COLOR_BUFFER_BIT);
 			m_window->OnUpdate();
 		}
+	}
+
+	bool Application::OnWindowClose(WindowCloseEvent& event) {
+		m_running = false;
+		return true;
 	}
 }

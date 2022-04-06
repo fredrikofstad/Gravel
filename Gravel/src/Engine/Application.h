@@ -2,6 +2,7 @@
 
 #include "Core.h"
 #include "Events/Event.h"
+#include "Engine/Events/ApplicationEvent.h"
 #include "Window.h"
 
 namespace Gravel {
@@ -15,6 +16,7 @@ namespace Gravel {
 		void Run();
 		void OnEvent(Event& event);
 	private:
+		bool OnWindowClose(WindowCloseEvent& event);
 		std::unique_ptr<Window> m_window;
 		bool m_running = true;
 	};
