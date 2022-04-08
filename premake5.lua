@@ -67,13 +67,13 @@ project "Gravel"
 	filter "configurations:Debug"
 		defines "GR_DEBUG"
 		runtime "Debug"
-        buildoptions "/MTd"
+        buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "GR_RELEASE"
 		runtime "Release"
-        buildoptions "/MT"
+        buildoptions "/MD"
 		optimize "On"
 
 	filter "configurations:Distribution"
@@ -118,10 +118,12 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "GR_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "GR_RELEASE"
+		buildoptions "/MD"
 		optimize "On"
 
 	filter "configurations:Distribution"

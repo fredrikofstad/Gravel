@@ -36,8 +36,10 @@ namespace Gravel {
 
 	class GRAVEL_API Event
 	{
-		friend class EventDispatcher;
 	public:
+
+		bool Handled = false;
+
 		virtual EventType GetEventType() const = 0;
 		virtual const char* GetName() const = 0;
 		virtual int GetCategoryFlags() const = 0;
@@ -47,8 +49,6 @@ namespace Gravel {
 		{
 			return GetCategoryFlags() & category;
 		}
-	protected:
-		bool m_eventHandled = false;
 	};
 
 	class EventDispatcher
@@ -64,7 +64,7 @@ namespace Gravel {
 		{
 			if (m_event.GetEventType() == T::GetStaticType())
 			{
-				m_event.m_eventHandled = func(*(T*)&m_event);
+				m_event.Handled = func(*(T*)&m_event);
 				return true;
 			}
 			return false;

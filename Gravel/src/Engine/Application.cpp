@@ -21,12 +21,28 @@ namespace Gravel {
 	{
 	}
 
+	void Application::AddLayer(Layer* layer)
+	{
+		m_layerStack.AddLayer(layer);
+	}
+
+	void Application::AddOverlay(Layer* layer)
+	{
+		m_layerStack.AddOverlay(layer);
+	}
+
+
 	void Application::OnEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT(Application::OnWindowClose));
 
-		GR_CORE_TRACE("{0}", event);
+		for (auto it = m_layerStack.end(); it != m_layerStack.begin();)
+		{
+			(*--it)->OnEvent(event);
+			if (event.Handled)
+				break;
+		}
 	}
 
 	void Application::Run()
@@ -35,6 +51,10 @@ namespace Gravel {
 		{
 			glClearColor(0.8,0,0.8,1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			for (Layer* layer : m_layerStack)
+				layer->OnUpdate();
+
 			m_window->OnUpdate();
 		}
 	}
