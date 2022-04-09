@@ -13,8 +13,10 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
 IncludeDir["GLWF"] = "Gravel/vendor/GLFW/include"
+IncludeDir["Glad"] = "Gravel/vendor/Glad/include"
 
 include "Gravel/vendor/GLFW"
+include "Gravel/vendor/Glad"
 
 
 project "Gravel"
@@ -39,12 +41,14 @@ project "Gravel"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/GLFW/include",
+		"%{prj.name}/vendor/Glad/include",
 		--"%{IncludeDir.GLFW}"
 	}
 
 	links
 	{
 		"GLFW",
+		"Glad",
 		"opengl32.lib"
 	}
 
@@ -57,6 +61,7 @@ project "Gravel"
 		{
 			"GR_PLATFORM_WINDOWS",
 			"GR_BUILD_DLL",
+			"GLFW_INCLUDE_NONE"
 		}
 
 		postbuildcommands

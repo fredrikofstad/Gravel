@@ -5,6 +5,7 @@
 #include "Engine/Events/MouseEvent.h"
 #include "Engine/Events/ApplicationEvent.h"
 
+#include <glad/glad.h>
 
 
 namespace Gravel {
@@ -50,6 +51,10 @@ namespace Gravel {
 
 		m_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, m_data.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_window);
+
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		GR_CORE_ASSERT(status, "Failed to initialize Glad.")
+
 		glfwSetWindowUserPointer(m_window, &m_data);
 		SetVSync(true);
 

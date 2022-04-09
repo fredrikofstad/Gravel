@@ -49,8 +49,8 @@ namespace Gravel {
 	{
 		while (m_running) 
 		{
-			glClearColor(0.8,0,0.8,1);
-			glClear(GL_COLOR_BUFFER_BIT);
+			//glClearColor(0.8,0,0.8,1);
+			//glClear(GL_COLOR_BUFFER_BIT);
 
 			for (Layer* layer : m_layerStack)
 				layer->OnUpdate();
