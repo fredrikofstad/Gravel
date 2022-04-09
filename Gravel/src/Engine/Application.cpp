@@ -4,14 +4,17 @@
 #include "Engine/Log.h"
 
 //for testing
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 namespace Gravel {
 
 #define BIND_EVENT(x) std::bind(&x, this, std::placeholders::_1)
 
+	Application* Application::s_instance = nullptr;
+
 	Application::Application()
 	{
+		s_instance = this;
 		// self deleting when out of scope
 		m_window = std::unique_ptr<Window>(Window::Create());
 		m_window->SetEventCallback(BIND_EVENT(Application::OnEvent));
@@ -24,11 +27,13 @@ namespace Gravel {
 	void Application::AddLayer(Layer* layer)
 	{
 		m_layerStack.AddLayer(layer);
+		layer->OnAttach();
 	}
 
 	void Application::AddOverlay(Layer* layer)
 	{
 		m_layerStack.AddOverlay(layer);
+		layer->OnAttach();
 	}
 
 
@@ -49,8 +54,8 @@ namespace Gravel {
 	{
 		while (m_running) 
 		{
-			//glClearColor(0.8,0,0.8,1);
-			//glClear(GL_COLOR_BUFFER_BIT);
+			glClearColor(0.8,0,0.8,1);
+			glClear(GL_COLOR_BUFFER_BIT);
 
 			for (Layer* layer : m_layerStack)
 				layer->OnUpdate();

@@ -14,9 +14,11 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLWF"] = "Gravel/vendor/GLFW/include"
 IncludeDir["Glad"] = "Gravel/vendor/Glad/include"
+IncludeDir["Imgui"] = "Gravel/vendor/imgui/include"
 
 include "Gravel/vendor/GLFW"
 include "Gravel/vendor/Glad"
+include "Gravel/vendor/imgui"
 
 
 project "Gravel"
@@ -42,6 +44,7 @@ project "Gravel"
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/GLFW/include",
 		"%{prj.name}/vendor/Glad/include",
+		"%{prj.name}/vendor/imgui",
 		--"%{IncludeDir.GLFW}"
 	}
 
@@ -49,6 +52,7 @@ project "Gravel"
 	{
 		"GLFW",
 		"Glad",
+		"Imgui",
 		"opengl32.lib"
 	}
 

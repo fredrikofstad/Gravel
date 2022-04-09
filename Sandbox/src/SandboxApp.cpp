@@ -23,6 +23,7 @@ public:
 	Sandbox()
 	{
 		AddLayer(new ExampleLayer());
+		AddOverlay(new Gravel::ImguiLayer());
 	}
 	~Sandbox()
 	{
