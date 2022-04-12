@@ -21,6 +21,16 @@ namespace Gravel {
 
 	}
 
+	ImguiLayer::ImguiLayer()
+	{
+
+	}
+
+	ImguiLayer::~ImguiLayer()
+	{
+
+	}
+
 	void ImguiLayer::OnAttach()
 	{
 		ImGui::CreateContext();
@@ -82,6 +92,47 @@ namespace Gravel {
 	}
 
 	void ImguiLayer::OnEvent(Event& event)
+	{
+
+	}
+
+
+	bool ImguiLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& event)
+	{
+
+	}
+
+	bool ImguiLayer::OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& event)
+	{
+
+	}
+
+	bool ImguiLayer::OnMouseMovedEvent(MouseMovedEvent& event)
+	{
+
+	}
+
+	bool ImguiLayer::OnMouseScrolledEvent(MouseScrolledEvent& event)
+	{
+
+	}
+
+	bool ImguiLayer::OnKeyPressedEvent(MouseScrolledEvent& event)
+	{
+
+	}
+
+	bool ImguiLayer::OnKeyReleasedEvent(KeyReleasedEvent& event)
+	{
+
+	}
+
+	bool ImguiLayer::OnKeyTypedEvent(KeyTypedEvent& event)
+	{
+
+	}
+
+	bool ImguiLayer::OnWindowResizeEvent(WindowResizeEvent& event)
 	{
 
 	}
