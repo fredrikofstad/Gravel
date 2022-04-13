@@ -20,3 +20,5 @@
 #endif
 
 #define BIT(x) (1 << x)
+
+#define GR_BIND_EVENT(fn) std::bind(&fn, this, std::placeholders::_1)

@@ -93,13 +93,26 @@ namespace Gravel {
 
 	void ImguiLayer::OnEvent(Event& event)
 	{
+		EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<MouseButtonPressedEvent>(GR_BIND_EVENT(ImguiLayer::OnMouseButtonPressedEvent));
+		dispatcher.Dispatch<MouseButtonReleasedEvent>(GR_BIND_EVENT(ImguiLayer::OnMouseButtonReleasedEvent));
+		dispatcher.Dispatch<MouseMovedEvent>(GR_BIND_EVENT(ImguiLayer::OnMouseMovedEvent));
+		dispatcher.Dispatch<MouseScrolledEvent>(GR_BIND_EVENT(ImguiLayer::OnMouseScrolledEvent));
+
+		//dispatcher.Dispatch<KeyTypedEvent>(GR_BIND_EVENT(ImguiLayer::OnKeyTypedEvent));
+		//dispatcher.Dispatch<KeyPressedEvent>(GR_BIND_EVENT(ImguiLayer::OnKeyPressedEvent));
+		dispatcher.Dispatch<KeyReleasedEvent>(GR_BIND_EVENT(ImguiLayer::OnKeyReleasedEvent));
+		dispatcher.Dispatch<WindowResizeEvent>(GR_BIND_EVENT(ImguiLayer::OnWindowResizeEvent));
 
 	}
 
 
 	bool ImguiLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& event)
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.MouseDown[event.GetMouseButton()] = true;
 
+		return false;
 	}
 
 	bool ImguiLayer::OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& event)
