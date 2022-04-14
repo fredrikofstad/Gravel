@@ -26,7 +26,7 @@ namespace Gravel {
 		bool OnMouseScrolledEvent(MouseScrolledEvent& event);
 		bool OnKeyPressedEvent(MouseScrolledEvent& event);
 		bool OnKeyReleasedEvent(KeyReleasedEvent& event);
-		bool OnKeyTypedEvent(KeyTypedEvent& event);
+		//bool OnKeyTypedEvent(KeyTypedEvent& event);
 		bool OnWindowResizeEvent(WindowResizeEvent& event);
 
 	private:

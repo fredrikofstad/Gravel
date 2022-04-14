@@ -21,15 +21,6 @@ namespace Gravel {
 
 	}
 
-	ImguiLayer::ImguiLayer()
-	{
-
-	}
-
-	ImguiLayer::~ImguiLayer()
-	{
-
-	}
 
 	void ImguiLayer::OnAttach()
 	{
@@ -117,37 +108,48 @@ namespace Gravel {
 
 	bool ImguiLayer::OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& event)
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.MouseDown[event.GetMouseButton()] = false;
+
+		return false;
 
 	}
 
 	bool ImguiLayer::OnMouseMovedEvent(MouseMovedEvent& event)
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.MousePos = ImVec2(event.GetX(), event.GetY());
 
+		return false;
 	}
 
 	bool ImguiLayer::OnMouseScrolledEvent(MouseScrolledEvent& event)
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.MouseWheelH += event.GetXOffset();
+		io.MouseWheel += event.GetYOffset();
 
+		return false;
 	}
 
 	bool ImguiLayer::OnKeyPressedEvent(MouseScrolledEvent& event)
 	{
-
+		return false;
 	}
 
 	bool ImguiLayer::OnKeyReleasedEvent(KeyReleasedEvent& event)
 	{
-
+		return false;
 	}
-
+	/*
 	bool ImguiLayer::OnKeyTypedEvent(KeyTypedEvent& event)
 	{
-
+		return false;
 	}
-
+	*/
 	bool ImguiLayer::OnWindowResizeEvent(WindowResizeEvent& event)
 	{
-
+		return false;
 	}
 
 }

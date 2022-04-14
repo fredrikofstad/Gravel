@@ -54,7 +54,7 @@ namespace Gravel {
 	{
 	public:
 
-		inline float GetMouseButton() const { return m_button; }
+		inline bool GetMouseButton() const { return m_button; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 
