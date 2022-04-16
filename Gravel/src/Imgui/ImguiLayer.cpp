@@ -3,9 +3,12 @@
 
 #include "Imgui.h"
 #include "Platform/OpenGL/ImguiOpenGLRenderer.h"
-#include "GLFW/glfw3.h"
 
 #include "Engine/Application.h"
+
+//tmp
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 
 
@@ -134,6 +137,8 @@ namespace Gravel {
 
 	bool ImguiLayer::OnKeyPressedEvent(MouseScrolledEvent& event)
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.KeysDown[event.GetKeyCode()] = true;
 		return false;
 	}
 
@@ -149,6 +154,11 @@ namespace Gravel {
 	*/
 	bool ImguiLayer::OnWindowResizeEvent(WindowResizeEvent& event)
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2(event.GetWidth(), event.GetHeight());
+		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+		glViewport(0, 0, event.GetWidth(), event.GetHeight());
+
 		return false;
 	}
 
