@@ -25,6 +25,7 @@ project "Gravel"
 	location "Gravel"
 	kind "SharedLib"
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -58,7 +59,6 @@ project "Gravel"
 
 	filter "system:windows"
 		cppdialect "c++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
@@ -76,23 +76,23 @@ project "Gravel"
 	filter "configurations:Debug"
 		defines "GR_DEBUG"
 		runtime "Debug"
-        buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "GR_RELEASE"
 		runtime "Release"
-        buildoptions "/MD"
 		optimize "On"
 
 	filter "configurations:Distribution"
 		defines "GR_DIST"
+		runtime "Release"
 		optimize "On"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -116,7 +116,6 @@ project "Sandbox"
 
 	filter "system:windows"
 		cppdialect "c++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
@@ -127,14 +126,15 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "GR_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "GR_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Distribution"
 		defines "GR_DIST"
+		runtime "Release"
 		optimize "On"
