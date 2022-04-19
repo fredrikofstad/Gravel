@@ -93,8 +93,8 @@ namespace Gravel {
 		dispatcher.Dispatch<MouseMovedEvent>(GR_BIND_EVENT(ImguiLayer::OnMouseMovedEvent));
 		dispatcher.Dispatch<MouseScrolledEvent>(GR_BIND_EVENT(ImguiLayer::OnMouseScrolledEvent));
 
-		//dispatcher.Dispatch<KeyTypedEvent>(GR_BIND_EVENT(ImguiLayer::OnKeyTypedEvent));
-		//dispatcher.Dispatch<KeyPressedEvent>(GR_BIND_EVENT(ImguiLayer::OnKeyPressedEvent));
+		dispatcher.Dispatch<KeyTypedEvent>(GR_BIND_EVENT(ImguiLayer::OnKeyTypedEvent));
+		dispatcher.Dispatch<KeyPressedEvent>(GR_BIND_EVENT(ImguiLayer::OnKeyPressedEvent));
 		dispatcher.Dispatch<KeyReleasedEvent>(GR_BIND_EVENT(ImguiLayer::OnKeyReleasedEvent));
 		dispatcher.Dispatch<WindowResizeEvent>(GR_BIND_EVENT(ImguiLayer::OnWindowResizeEvent));
 
@@ -135,23 +135,35 @@ namespace Gravel {
 		return false;
 	}
 
-	bool ImguiLayer::OnKeyPressedEvent(MouseScrolledEvent& event)
+	bool ImguiLayer::OnKeyPressedEvent(KeyPressedEvent& event)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		io.KeysDown[event.GetKeyCode()] = true;
+
+		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
+		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
 		return false;
 	}
 
 	bool ImguiLayer::OnKeyReleasedEvent(KeyReleasedEvent& event)
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.KeysDown[event.GetKeyCode()] = false;
 		return false;
 	}
-	/*
+	
 	bool ImguiLayer::OnKeyTypedEvent(KeyTypedEvent& event)
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		int keycode = event.GetKeyCode();
+		if (keycode > 0 && keycode < 0x10000)
+			io.AddInputCharacter((unsigned short)keycode);
+
 		return false;
 	}
-	*/
+	
 	bool ImguiLayer::OnWindowResizeEvent(WindowResizeEvent& event)
 	{
 		ImGuiIO& io = ImGui::GetIO();

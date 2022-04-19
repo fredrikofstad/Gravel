@@ -20,7 +20,7 @@ namespace Gravel {
 		None,
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
 		AppTick, AppUpdate, AppRender,
-		KeyPressed, KeyTyped, KeyReleased,
+		KeyPressed, KeyReleased, KeyTyped,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 	};
 
