@@ -57,6 +57,7 @@
     <ClInclude Include="src\Platform\OpenGL\layer_test.cpp" />
     <ClInclude Include="src\Platform\OpenGL\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="src\Engine\Input.h" />
+    <ClInclude Include="src\Platform\Windows\WinddowsInput.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">
@@ -78,5 +79,6 @@
     <ClCompile Include="src\Imgui\ImguiLayer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\ImguiOpenGLRenderer.h" />
     <ClCompile Include="src\Platform\OpenGL\ImguiOpenGLRenderer.cpp" />
+    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
   </ItemGroup>
 </Project>

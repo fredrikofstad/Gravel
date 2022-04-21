@@ -167,6 +167,7 @@
     <ClInclude Include="src\Gravel.h" />
     <ClInclude Include="src\Platform\OpenGL\layer_test.cpp" />
     <ClInclude Include="src\Platform\OpenGL\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="src\Platform\Windows\WinddowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\grpch.h" />
   </ItemGroup>
@@ -178,6 +179,7 @@
     <ClCompile Include="src\Engine\Log.cpp" />
     <ClCompile Include="src\Platform\OpenGL\ImguiOpenGLRenderer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\ImguiOpenGLRenderer.h" />
+    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\grpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

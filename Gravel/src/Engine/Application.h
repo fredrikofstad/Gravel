@@ -21,8 +21,9 @@ namespace Gravel {
 		void AddLayer(Layer* layer);
 		void AddOverlay(Layer* layer);
 
-		inline static Application& Get() { return *s_instance; }
 		inline Window& GetWindow() { return *m_window; }
+
+		inline static Application& Get() { return *s_instance; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
 		std::unique_ptr<Window> m_window;
