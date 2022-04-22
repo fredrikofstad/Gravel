@@ -6,6 +6,8 @@
 //for testing
 #include <glad/glad.h>
 
+#include "Input.h"
+
 namespace Gravel {
 
 #define BIND_EVENT(x) std::bind(&x, this, std::placeholders::_1)
@@ -59,6 +61,8 @@ namespace Gravel {
 
 			for (Layer* layer : m_layerStack)
 				layer->OnUpdate();
+
+			
 
 			m_window->OnUpdate();
 		}
