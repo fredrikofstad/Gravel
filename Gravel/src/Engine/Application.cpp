@@ -62,7 +62,8 @@ namespace Gravel {
 			for (Layer* layer : m_layerStack)
 				layer->OnUpdate();
 
-			
+			auto [x, y] = Input::GetMousePosition();
+			GR_CORE_TRACE("{0}, {1}", x, y);
 
 			m_window->OnUpdate();
 		}
