@@ -8,15 +8,15 @@ public:
 
 	void OnUpdate() override
 	{
-		GR_INFO("ExampleLayer::Update");
+		//GR_INFO("ExampleLayer::Update");
 
-		if(Gravel::Input::isKeyPressed(GR_KEY_SPACE))
-			GR_INFO("Space is pressed!")
+		if (Gravel::Input::isKeyPressed(GR_KEY_SPACE))
+			GR_TRACE("Space is pressed!");
 	}
 
 	void OnEvent(Gravel::Event& event) override
 	{
-		GR_TRACE("{0}", event);
+		//GR_TRACE("{0}", event);
 	}
 };
 
