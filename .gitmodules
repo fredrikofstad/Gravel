@@ -4,3 +4,6 @@
 [submodule "Gravel/vendor/GLFW"]
 	path = Gravel/vendor/GLFW
 	url = https://github.com/fredrikofstad/glfw
+[submodule "Gravel/vendor/glm"]
+	path = Gravel/vendor/glm
+	url = https://github.com/g-truc/glm
