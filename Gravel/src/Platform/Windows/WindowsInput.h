@@ -11,7 +11,6 @@ namespace Gravel {
 
 		virtual bool isMouseButtonPressedImp(int button) override;
 
-
 		virtual std::pair<float, float> GetMousePositionImp() override;
 		virtual float GetMouseXImp() override;
 		virtual float GetMouseYImp() override;

@@ -14,7 +14,8 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLWF"] = "Gravel/vendor/GLFW/include"
 IncludeDir["Glad"] = "Gravel/vendor/Glad/include"
-IncludeDir["Imgui"] = "Gravel/vendor/imgui/include"
+IncludeDir["Imgui"] = "Gravel/vendor/imgui"
+IncludeDir["glm"] = "Gravel/vendor/glm/"
 
 include "Gravel/vendor/GLFW"
 include "Gravel/vendor/Glad"
@@ -46,6 +47,8 @@ project "Gravel"
 		"%{prj.name}/vendor/GLFW/include",
 		"%{prj.name}/vendor/Glad/include",
 		"%{prj.name}/vendor/imgui",
+		"%{prj.name}/vendor/glm",
+
 		--"%{IncludeDir.GLFW}"
 	}
 
@@ -106,7 +109,8 @@ project "Sandbox"
 	includedirs
 	{
 		"Gravel/vendor/spdlog/include",
-		"Gravel/src"
+		"Gravel/src",
+		"%{prj.name}/vendor/glm"
 	}
 
 	links
