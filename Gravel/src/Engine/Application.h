@@ -7,6 +7,9 @@
 #include "Events/Event.h"
 #include "Engine/Events/ApplicationEvent.h"
 
+//TODO: fix folder structure
+#include "Imgui/ImguiLayer.h"
+
 namespace Gravel {
 
 	class GRAVEL_API Application
@@ -27,6 +30,7 @@ namespace Gravel {
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
 		std::unique_ptr<Window> m_window;
+		ImguiLayer* m_imguiLayer;
 		bool m_running = true;
 		LayerStack m_layerStack;
 

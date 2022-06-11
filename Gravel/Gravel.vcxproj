@@ -165,8 +165,6 @@
     <ClInclude Include="src\Engine\Window.h" />
     <ClInclude Include="src\Gravel.h" />
     <ClInclude Include="src\Imgui\ImguiLayer.h" />
-    <ClInclude Include="src\Platform\OpenGL\ImguiOpenGLRenderer.h" />
-    <ClInclude Include="src\Platform\OpenGL\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\grpch.h" />
@@ -176,9 +174,8 @@
     <ClCompile Include="src\Engine\Layer.cpp" />
     <ClCompile Include="src\Engine\LayerStack.cpp" />
     <ClCompile Include="src\Engine\Log.cpp" />
+    <ClCompile Include="src\Imgui\ImguiBuild.cpp" />
     <ClCompile Include="src\Imgui\ImguiLayer.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\ImguiOpenGLRenderer.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\layer_test.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\grpch.cpp">

@@ -21,6 +21,9 @@ namespace Gravel {
 		// self deleting when out of scope
 		m_window = std::unique_ptr<Window>(Window::Create());
 		m_window->SetEventCallback(BIND_EVENT(Application::OnEvent));
+
+		m_imguiLayer = new ImguiLayer();
+		AddOverlay(m_imguiLayer);
 	}
 
 	Application::~Application()
@@ -63,6 +66,11 @@ namespace Gravel {
 			for (Layer* layer : m_layerStack)
 				layer->OnUpdate();
 
+			//moved to render thread in future
+			m_imguiLayer->Start();
+			for (Layer* layer : m_layerStack)
+				layer->OnImguiRender();
+			m_imguiLayer->End();
 
 			m_window->OnUpdate();
 		}

@@ -7,7 +7,6 @@ namespace Gravel {
 
 	LayerStack::LayerStack()
 	{
-		m_layerInsert = m_layers.begin();
 	}
 
 	LayerStack::~LayerStack()
@@ -18,7 +17,8 @@ namespace Gravel {
 
 	void LayerStack::AddLayer(Layer* layer)
 	{
-		m_layerInsert = m_layers.emplace(m_layerInsert, layer);
+		m_layers.emplace(m_layers.begin() + m_layerInsertIndex, layer);
+		m_layerInsertIndex++;
 	}
 
 	void LayerStack::AddOverlay(Layer* overlay)
@@ -32,7 +32,7 @@ namespace Gravel {
 		if (it != m_layers.end())
 		{
 			m_layers.erase(it);
-			m_layerInsert--;
+			m_layerInsertIndex--;
 		}
 	}
 
