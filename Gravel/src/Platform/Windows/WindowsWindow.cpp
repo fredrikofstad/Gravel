@@ -5,8 +5,7 @@
 #include "Engine/Events/MouseEvent.h"
 #include "Engine/Events/ApplicationEvent.h"
 
-#include <glad/glad.h>
-
+#include "Platform/OpenGL/OpenGLContext.h"
 
 namespace Gravel {
 
@@ -40,6 +39,8 @@ namespace Gravel {
 
 		GR_CORE_INFO("Created window {0} ({1}, {2})", properties.Title, properties.Width, properties.Height);
 
+
+
 		if (!s_GLFWInitialized)
 		{
 			// TODO: glfwTerminate on shutdown
@@ -49,11 +50,12 @@ namespace Gravel {
 			s_GLFWInitialized = true;
 		}
 
-		m_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, m_data.Title.c_str(), nullptr, nullptr);
-		glfwMakeContextCurrent(m_window);
 
-		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		GR_CORE_ASSERT(status, "Failed to initialize Glad.")
+		m_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, m_data.Title.c_str(), nullptr, nullptr);
+		
+		m_context = new OpenGLContext(m_window);
+		m_context->Init();
+
 
 		glfwSetWindowUserPointer(m_window, &m_data);
 		SetVSync(true);
@@ -155,7 +157,8 @@ namespace Gravel {
 	void WindowsWindow::OnUpdate()
 	{
 		glfwPollEvents();
-		glfwSwapBuffers(m_window);
+
+		m_context->SwapBuffers();
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)

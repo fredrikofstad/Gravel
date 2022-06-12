@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Engine/Window.h"
+#include "Engine/Renderer/RendererContext.h"
+
 #include <GLFW/glfw3.h>
 
 namespace Gravel {
@@ -25,6 +27,7 @@ namespace Gravel {
 		virtual void Shutdown();
 	private:
 		GLFWwindow* m_window;
+		RendererContext* m_context;
 
 		struct WindowData
 		{
