@@ -48,8 +48,37 @@ namespace Gravel {
 		unsigned int indices[3] = { 0,1,2 };
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
+		std::string vertexSource = R"(
+			#version 330 core
+
+			layout(location = 0) in vec3 position;
+
+			out vec3 outPosition;
+
+			void main()
+			{
+				gl_Position = vec4(position, 1.0);
+				outPosition = position;
+			};
+		)";
+
+		std::string fragmentSource = R"(
+			#version 330 core
+
+			in vec3 outPosition;
+
+			layout(location = 0) out vec4 color;
+
+			void main()
+			{
+				color = vec4(outPosition * 0.5 + 0.5, 1.0);
+			};
+		)";
 
 
+		m_shader.reset(new Shader(vertexSource, fragmentSource));
+
+		//m_shader.reset(new Shader("res/shaders/Basic.shader"));
 	}
 
 	Application::~Application()
@@ -88,6 +117,8 @@ namespace Gravel {
 		{
 			glClearColor(0.1f,0.1f,0.1f,1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			m_shader->Bind();
 
 			glBindVertexArray(m_vertexArray);
 			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);

@@ -7,8 +7,9 @@
 #include "Events/Event.h"
 #include "Engine/Events/ApplicationEvent.h"
 
-//TODO: fix folder structure
 #include "Imgui/ImguiLayer.h"
+
+#include "Engine/Renderer/Shader.h"
 
 namespace Gravel {
 
@@ -35,6 +36,7 @@ namespace Gravel {
 		LayerStack m_layerStack;
 
 		unsigned int m_vertexArray, m_vertexBuffer, m_indexBuffer;
+		std::unique_ptr<Shader> m_shader;
 
 		static Application* s_instance;
 	};

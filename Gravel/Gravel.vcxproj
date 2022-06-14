@@ -154,6 +154,7 @@
     <ClInclude Include="src\Engine\Log.h" />
     <ClInclude Include="src\Engine\MouseCodes.h" />
     <ClInclude Include="src\Engine\Renderer\RendererContext.h" />
+    <ClInclude Include="src\Engine\Renderer\Shader.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Engine\Window.h" />
     <ClInclude Include="src\Gravel.h" />
@@ -167,6 +168,7 @@
     <ClCompile Include="src\Engine\Layer.cpp" />
     <ClCompile Include="src\Engine\LayerStack.cpp" />
     <ClCompile Include="src\Engine\Log.cpp" />
+    <ClCompile Include="src\Engine\Renderer\Shader.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Imgui\ImguiBuild.cpp" />
     <ClCompile Include="src\Imgui\ImguiLayer.cpp" />
@@ -186,6 +188,9 @@
     <ProjectReference Include="vendor\imgui\Imgui.vcxproj">
       <Project>{E087650D-4C9C-8DBE-151E-311E81F189EF}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\Basic.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
