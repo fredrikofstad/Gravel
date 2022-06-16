@@ -29,11 +29,11 @@ namespace Gravel {
 #define GR_CORE_INFO(...)  ::Gravel::Log::GetCoreLogger()->info(__VA_ARGS__)
 #define GR_CORE_WARN(...)  ::Gravel::Log::GetCoreLogger()->warn(__VA_ARGS__)
 #define GR_CORE_ERROR(...) ::Gravel::Log::GetCoreLogger()->error(__VA_ARGS__)
-#define GR_CORE_FATAL(...) ::Gravel::Log::GetCoreLogger()->fatal(__VA_ARGS__)
+#define GR_CORE_CRITICAL(...) ::Gravel::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
 //client log macros
 #define GR_TRACE(...)      ::Gravel::Log::GetClientLogger()->trace(__VA_ARGS__)
 #define GR_INFO(...)       ::Gravel::Log::GetClientLogger()->info(__VA_ARGS__)
 #define GR_WARN(...)       ::Gravel::Log::GetClientLogger()->warn(__VA_ARGS__)
 #define GR_ERROR(...)      ::Gravel::Log::GetClientLogger()->error(__VA_ARGS__)
-#define GR_FATAL(...)      ::Gravel::Log::GetClientLogger()->fatal(__VA_ARGS__)
+#define GR_CRITICAL(...)      ::Gravel::Log::GetClientLogger()->critical(__VA_ARGS__)

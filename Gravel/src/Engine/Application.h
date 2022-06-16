@@ -9,7 +9,10 @@
 
 #include "Imgui/ImguiLayer.h"
 
+#include "Engine/Renderer/VertexArray.h"
+#include "Engine/Renderer/Buffer.h"
 #include "Engine/Renderer/Shader.h"
+
 
 namespace Gravel {
 
@@ -35,8 +38,12 @@ namespace Gravel {
 		bool m_running = true;
 		LayerStack m_layerStack;
 
-		unsigned int m_vertexArray, m_vertexBuffer, m_indexBuffer;
-		std::unique_ptr<Shader> m_shader;
+		std::shared_ptr<VertexArray> m_vertexArray;
+		std::shared_ptr<Shader> m_shader;
+
+		std::shared_ptr<VertexArray> m_squareVAO;
+		std::shared_ptr<Shader> m_shader2;
+
 
 		static Application* s_instance;
 	};

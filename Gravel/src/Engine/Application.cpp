@@ -15,40 +15,106 @@ namespace Gravel {
 
 	Application* Application::s_instance = nullptr;
 
+
 	Application::Application()
 	{
+		GR_CORE_ASSERT(!s_instance, "Instance of application already exits.")
 		s_instance = this;
-		// self deleting when out of scope
+
 		m_window = std::unique_ptr<Window>(Window::Create());
 		m_window->SetEventCallback(BIND_EVENT(Application::OnEvent));
 
 		m_imguiLayer = new ImguiLayer();
 		AddOverlay(m_imguiLayer);
 
-		glGenVertexArrays(1, &m_vertexArray);
-		glBindVertexArray(m_vertexArray);
+		m_vertexArray.reset(VertexArray::Create());
 
-		glGenBuffers(1, &m_vertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
-
-		float vertices[3 * 3] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.0f,  0.5f, 0.0f,
+		float vertices[7 * 3] = {
+			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+			 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+			 0.0f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f
 		};
 
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		std::shared_ptr<VertexBuffer> vertexBuffer;
+		vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+		
+		BufferLayout layout = {
 
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+			{ AttributeType::Float3, "position" },
+			{ AttributeType::Float4, "color" }
+		};
 
-		glGenBuffers(1, &m_indexBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
+		// set layout vefore adding buffer to array!
+		vertexBuffer->SetLayout(layout);
+		m_vertexArray->AddVertexBuffer(vertexBuffer);
+
 
 		unsigned int indices[3] = { 0,1,2 };
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		std::shared_ptr<IndexBuffer> indexBuffer;
+		indexBuffer.reset(IndexBuffer::Create(indices, std::size(indices)));
+		m_vertexArray->SetIndexBuffer(indexBuffer);
+
+
+		m_squareVAO.reset(VertexArray::Create());
+
+		float squareVertices[3 * 4] = {
+			-0.75f, -0.75f, 0.0f,
+			 0.75f, -0.75f, 0.0f,
+			 0.75f,  0.75f, 0.0f,
+			-0.75f,  0.75f, 0.0f
+
+		};
+
+		std::shared_ptr<VertexBuffer> squareVBO;
+		squareVBO.reset(VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+		squareVBO->SetLayout({
+			{ AttributeType::Float3, "position" },
+		});
+		m_squareVAO->AddVertexBuffer(squareVBO);
+
+		unsigned int squareIndices[6] = { 0,1,2, 2, 3, 0 };
+		std::shared_ptr<IndexBuffer> squareIBO;
+		squareIBO.reset(IndexBuffer::Create(squareIndices, std::size(squareIndices)));
+
+		m_squareVAO->SetIndexBuffer(squareIBO);
 
 		std::string vertexSource = R"(
+			#version 330 core
+
+			layout(location = 0) in vec3 position;
+			layout(location = 1) in vec4 color;
+
+
+			out vec3 outPosition;
+			out vec4 outColor;
+
+			void main()
+			{
+				gl_Position = vec4(position, 1.0);
+				outPosition = position;
+				outColor = color;
+			};
+		)";
+
+		std::string fragmentSource = R"(
+			#version 330 core
+
+			in vec3 outPosition;
+			in vec4 outColor;
+
+			layout(location = 0) out vec4 color;
+
+			void main()
+			{
+				color = vec4(outPosition * 0.5 + 0.5, 1.0);
+				color =  outColor;
+			};
+		)";
+
+		m_shader.reset(new Shader(vertexSource, fragmentSource));
+
+		std::string vertexSource2 = R"(
 			#version 330 core
 
 			layout(location = 0) in vec3 position;
@@ -62,7 +128,7 @@ namespace Gravel {
 			};
 		)";
 
-		std::string fragmentSource = R"(
+		std::string fragmentSource2 = R"(
 			#version 330 core
 
 			in vec3 outPosition;
@@ -75,8 +141,8 @@ namespace Gravel {
 			};
 		)";
 
+		m_shader2.reset(new Shader(vertexSource2, fragmentSource2));
 
-		m_shader.reset(new Shader(vertexSource, fragmentSource));
 
 		//m_shader.reset(new Shader("res/shaders/Basic.shader"));
 	}
@@ -118,10 +184,16 @@ namespace Gravel {
 			glClearColor(0.1f,0.1f,0.1f,1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+
+			m_shader2->Bind();
+			m_squareVAO->Bind();
+
+			glDrawElements(GL_TRIANGLES, m_squareVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+
 			m_shader->Bind();
 
-			glBindVertexArray(m_vertexArray);
-			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+			m_vertexArray->Bind();
+			glDrawElements(GL_TRIANGLES, m_vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 			for (Layer* layer : m_layerStack)
 				layer->OnUpdate();
