@@ -8,10 +8,10 @@ namespace Gravel {
 
 	VertexArray* VertexArray::Create()
 	{
-		switch (Renderer::GetCurrentAPI())
+		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::None: GR_CORE_ASSERT(false, "Renderer None not yet implemented"); return nullptr;
-			case RendererAPI::OpenGL: return new OpenGLVertexArray();
+			case RendererAPI::API::None: GR_CORE_ASSERT(false, "Renderer None not yet implemented"); return nullptr;
+			case RendererAPI::API::OpenGL: return new OpenGLVertexArray();
 			default: GR_CORE_ASSERT(false, "RendererAPI not implemented in VertexArray's switch"); return nullptr;
 		}
 

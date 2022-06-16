@@ -17,10 +17,12 @@ IncludeDir["Glad"] = "Gravel/vendor/Glad/include"
 IncludeDir["Imgui"] = "Gravel/vendor/imgui"
 IncludeDir["glm"] = "Gravel/vendor/glm/"
 
-include "Gravel/vendor/GLFW"
-include "Gravel/vendor/Glad"
-include "Gravel/vendor/imgui"
+group "Dependencies"
+	include "Gravel/vendor/GLFW"
+	include "Gravel/vendor/Glad"
+	include "Gravel/vendor/imgui"
 
+group ""
 
 project "Gravel"
 	location "Gravel"
@@ -39,6 +41,8 @@ project "Gravel"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl",
 	}
 
 	defines
@@ -111,7 +115,8 @@ project "Sandbox"
 	{
 		"Gravel/vendor/spdlog/include",
 		"Gravel/src",
-		"%{prj.name}/vendor/glm"
+		"%{prj.name}/vendor/",
+		"%{IncludeDir.glm}",
 	}
 
 	links

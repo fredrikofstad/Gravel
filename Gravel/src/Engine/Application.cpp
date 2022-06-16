@@ -3,11 +3,8 @@
 
 #include "Engine/Log.h"
 
-//for testing
-#include <glad/glad.h>
-
+#include "Engine/Renderer/Renderer.h"
 #include "Input.h"
-//#include "glm/glm.hpp"
 
 namespace Gravel {
 
@@ -181,19 +178,20 @@ namespace Gravel {
 	{
 		while (m_running) 
 		{
-			glClearColor(0.1f,0.1f,0.1f,1);
-			glClear(GL_COLOR_BUFFER_BIT);
 
+			RenderInstruction::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+			RenderInstruction::Clear();
+
+			Renderer::StartScene();
 
 			m_shader2->Bind();
-			m_squareVAO->Bind();
-
-			glDrawElements(GL_TRIANGLES, m_squareVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::Add(m_squareVAO);
 
 			m_shader->Bind();
+			Renderer::Add(m_vertexArray);
 
-			m_vertexArray->Bind();
-			glDrawElements(GL_TRIANGLES, m_vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::EndScene();
+
 
 			for (Layer* layer : m_layerStack)
 				layer->OnUpdate();

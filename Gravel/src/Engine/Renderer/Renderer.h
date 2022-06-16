@@ -1,18 +1,18 @@
 #pragma once
 
-namespace Gravel {
+#include "RenderInstruction.h"
 
-	enum class RendererAPI
-	{
-		None, OpenGL
-	};
+namespace Gravel {
 
 	class Renderer
 	{
 	public:
-		inline static RendererAPI GetCurrentAPI() { return s_rendererAPI; }
-	private:
-		static RendererAPI s_rendererAPI;
+		static void StartScene();
+		static void EndScene();
+
+		static void Add(const std::shared_ptr<VertexArray>& vertexArray);
+
+		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 	};
 
 }

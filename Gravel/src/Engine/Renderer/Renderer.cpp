@@ -3,6 +3,19 @@
 
 namespace Gravel {
 
-	RendererAPI Renderer::s_rendererAPI = RendererAPI::OpenGL;
+	void Renderer::StartScene()
+	{
+
+	}
+	void Renderer::EndScene()
+	{
+
+	}
+
+	void Renderer::Add(const std::shared_ptr<VertexArray>& vertexArray)
+	{
+		vertexArray->Bind();
+		RenderInstruction::Draw(vertexArray);
+	}
 
 }
