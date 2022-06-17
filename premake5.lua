@@ -115,7 +115,7 @@ project "Sandbox"
 	{
 		"Gravel/vendor/spdlog/include",
 		"Gravel/src",
-		"%{prj.name}/vendor/",
+		"Gravel/vendor/",
 		"%{IncludeDir.glm}",
 	}
 

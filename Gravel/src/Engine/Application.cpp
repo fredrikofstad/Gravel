@@ -6,6 +6,8 @@
 #include "Engine/Renderer/Renderer.h"
 #include "Input.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Gravel {
 
 #define BIND_EVENT(x) std::bind(&x, this, std::placeholders::_1)
@@ -24,124 +26,6 @@ namespace Gravel {
 		m_imguiLayer = new ImguiLayer();
 		AddOverlay(m_imguiLayer);
 
-		m_vertexArray.reset(VertexArray::Create());
-
-		float vertices[7 * 3] = {
-			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-			 0.0f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f
-		};
-
-		std::shared_ptr<VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-		
-		BufferLayout layout = {
-
-			{ AttributeType::Float3, "position" },
-			{ AttributeType::Float4, "color" }
-		};
-
-		// set layout vefore adding buffer to array!
-		vertexBuffer->SetLayout(layout);
-		m_vertexArray->AddVertexBuffer(vertexBuffer);
-
-
-		unsigned int indices[3] = { 0,1,2 };
-
-		std::shared_ptr<IndexBuffer> indexBuffer;
-		indexBuffer.reset(IndexBuffer::Create(indices, std::size(indices)));
-		m_vertexArray->SetIndexBuffer(indexBuffer);
-
-
-		m_squareVAO.reset(VertexArray::Create());
-
-		float squareVertices[3 * 4] = {
-			-0.75f, -0.75f, 0.0f,
-			 0.75f, -0.75f, 0.0f,
-			 0.75f,  0.75f, 0.0f,
-			-0.75f,  0.75f, 0.0f
-
-		};
-
-		std::shared_ptr<VertexBuffer> squareVBO;
-		squareVBO.reset(VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
-		squareVBO->SetLayout({
-			{ AttributeType::Float3, "position" },
-		});
-		m_squareVAO->AddVertexBuffer(squareVBO);
-
-		unsigned int squareIndices[6] = { 0,1,2, 2, 3, 0 };
-		std::shared_ptr<IndexBuffer> squareIBO;
-		squareIBO.reset(IndexBuffer::Create(squareIndices, std::size(squareIndices)));
-
-		m_squareVAO->SetIndexBuffer(squareIBO);
-
-		std::string vertexSource = R"(
-			#version 330 core
-
-			layout(location = 0) in vec3 position;
-			layout(location = 1) in vec4 color;
-
-
-			out vec3 outPosition;
-			out vec4 outColor;
-
-			void main()
-			{
-				gl_Position = vec4(position, 1.0);
-				outPosition = position;
-				outColor = color;
-			};
-		)";
-
-		std::string fragmentSource = R"(
-			#version 330 core
-
-			in vec3 outPosition;
-			in vec4 outColor;
-
-			layout(location = 0) out vec4 color;
-
-			void main()
-			{
-				color = vec4(outPosition * 0.5 + 0.5, 1.0);
-				color =  outColor;
-			};
-		)";
-
-		m_shader.reset(new Shader(vertexSource, fragmentSource));
-
-		std::string vertexSource2 = R"(
-			#version 330 core
-
-			layout(location = 0) in vec3 position;
-
-			out vec3 outPosition;
-
-			void main()
-			{
-				gl_Position = vec4(position, 1.0);
-				outPosition = position;
-			};
-		)";
-
-		std::string fragmentSource2 = R"(
-			#version 330 core
-
-			in vec3 outPosition;
-
-			layout(location = 0) out vec4 color;
-
-			void main()
-			{
-				color = vec4(outPosition * 0.5 + 0.5, 1.0);
-			};
-		)";
-
-		m_shader2.reset(new Shader(vertexSource2, fragmentSource2));
-
-
-		//m_shader.reset(new Shader("res/shaders/Basic.shader"));
 	}
 
 	Application::~Application()
@@ -178,23 +62,13 @@ namespace Gravel {
 	{
 		while (m_running) 
 		{
-
-			RenderInstruction::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
-			RenderInstruction::Clear();
-
-			Renderer::StartScene();
-
-			m_shader2->Bind();
-			Renderer::Add(m_squareVAO);
-
-			m_shader->Bind();
-			Renderer::Add(m_vertexArray);
-
-			Renderer::EndScene();
-
-
+			//consider getting time from platform
+			float time = (float)glfwGetTime();
+			Timestep deltaTime = time - m_lastFrameTime;
+			m_lastFrameTime = time;
+			
 			for (Layer* layer : m_layerStack)
-				layer->OnUpdate();
+				layer->OnUpdate(deltaTime);
 
 			//moved to render thread in future
 			m_imguiLayer->Start();
