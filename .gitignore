@@ -367,3 +367,8 @@ FodyWeavers.xsd
 /bin/
 /Tests
 /vendor/
+
+*.vcxproj
+*.filters
+*.user
+
