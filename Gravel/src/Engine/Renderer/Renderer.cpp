@@ -6,6 +6,11 @@ namespace Gravel {
 
 	Renderer::SceneData* Renderer::s_sceneData = new Renderer::SceneData;
 
+	void Renderer::Init()
+	{
+		RenderInstruction::Init();
+	}
+
 	void Renderer::StartScene(OrthographicCamera& camera)
 	{
 		s_sceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();

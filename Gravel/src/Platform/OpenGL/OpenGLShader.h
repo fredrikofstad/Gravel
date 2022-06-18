@@ -3,10 +3,14 @@
 #include "Engine/Renderer/Shader.h"
 #include <glm/glm.hpp>
 
+// TODO: FIX this shit
+typedef unsigned int GLenum;
+
 namespace Gravel {
 	class OpenGLShader : public Shader
 	{
 	public:
+		OpenGLShader(const std::string& filepath);
 		OpenGLShader(const std::string& vertexSource, const std::string& fragmentSource);
 		virtual ~OpenGLShader();
 
@@ -23,8 +27,10 @@ namespace Gravel {
 		void SetUniformMat3(const std::string& name, const glm::mat3& matrix);
 		void SetUniformMat4(const std::string& name, const glm::mat4& matrix);
 
-		uint32_t CompileShader(const std::string& vertexSource, const std::string& fragmentSource);
-		ShaderStrings ParseShader(const std::string file);
+		void CompileShader(const std::unordered_map<GLenum, std::string>& shaderSources);
+
+		std::unordered_map<GLenum, std::string> ParseShader(const std::string file);
+		std::string MakeFile(const std::string filepath);
 
 	private:
 		uint32_t m_rendererID;

@@ -20,8 +20,10 @@ namespace Gravel {
 		GR_CORE_ASSERT(!s_instance, "Instance of application already exits.")
 		s_instance = this;
 
-		m_window = std::unique_ptr<Window>(Window::Create());
+		m_window = Unique<Window>(Window::Create());
 		m_window->SetEventCallback(BIND_EVENT(Application::OnEvent));
+
+		Renderer::Init();
 
 		m_imguiLayer = new ImguiLayer();
 		AddOverlay(m_imguiLayer);

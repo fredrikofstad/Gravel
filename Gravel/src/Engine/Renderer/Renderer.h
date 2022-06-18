@@ -9,6 +9,8 @@ namespace Gravel {
 	class Renderer
 	{
 	public:
+		static void Init();
+
 		static void StartScene(OrthographicCamera& camera);
 		static void EndScene();
 

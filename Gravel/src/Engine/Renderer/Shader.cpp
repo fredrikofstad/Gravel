@@ -16,4 +16,15 @@ namespace Gravel {
 		}
 
 	}
+
+	Shader* Shader::Create(const std::string& filepath)
+	{
+		switch (Renderer::GetAPI())
+		{
+		case RendererAPI::API::None: GR_CORE_ASSERT(false, "Renderer None not yet implemented"); return nullptr;
+		case RendererAPI::API::OpenGL: return new OpenGLShader(filepath);
+		default: GR_CORE_ASSERT(false, "RendererAPI not implemented in Shader's switch"); return nullptr;
+		}
+
+	}
 }
