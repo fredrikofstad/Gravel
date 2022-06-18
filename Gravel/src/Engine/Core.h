@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #ifdef GR_PLATFORM_WINDOWS
 #if GR_DLL
 	#ifdef GR_BUILD_DLL
@@ -30,3 +32,22 @@
 #define BIT(x) (1 << x)
 
 #define GR_BIND_EVENT(fn) std::bind(&fn, this, std::placeholders::_1)
+
+namespace Gravel {
+
+
+	template<typename T>
+	using Unique = std::unique_ptr<T>;
+
+	template<typename T>
+	using Shared = std::shared_ptr<T>;
+
+	//template<typename T>
+	//using MakeShared = std::make_shared<T>;
+
+
+	using RendererID = uint32_t;
+
+
+}
+

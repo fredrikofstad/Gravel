@@ -17,7 +17,7 @@ namespace Gravel {
 			s_rendererAPI->Clear();
 		}
 
-		inline static void Draw(const std::shared_ptr<VertexArray>& vertexArray)
+		inline static void Draw(const Shared<VertexArray>& vertexArray)
 		{
 			s_rendererAPI->Draw(vertexArray);
 		}

@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Platform/OpenGL/OpenGLShader.h"
+#include "Platform/OpenGL/OpenGLVertexArray.h"
 
 class ExampleLayer : public Gravel::Layer
 {
@@ -11,7 +12,7 @@ public:
 	ExampleLayer()
 		: Layer("Example"), m_camera(-1.6f, 1.6f, -0.9f, 0.9f), m_cameraPosition(0.0f), m_squarePosition(0.0f)
 	{
-		m_vertexArray.reset(Gravel::VertexArray::Create());
+		m_vertexArray = std::make_shared<Gravel::OpenGLVertexArray>();
 
 		float vertices[7 * 3] = {
 			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
@@ -19,13 +20,13 @@ public:
 			 0.0f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f
 		};
 
-		std::shared_ptr<Gravel::VertexBuffer> vertexBuffer;
+		Gravel::Shared<Gravel::VertexBuffer> vertexBuffer;
 		vertexBuffer.reset(Gravel::VertexBuffer::Create(vertices, sizeof(vertices)));
 
 		Gravel::BufferLayout layout = {
 
-			{ Gravel::AttributeType::Float3, "position" },
-			{ Gravel::AttributeType::Float4, "color" }
+			{ Gravel::AttributeType::Float3, "a_position" },
+			{ Gravel::AttributeType::Float4, "a_color" }
 		};
 
 		// set layout vefore adding buffer to array!
@@ -35,30 +36,30 @@ public:
 
 		unsigned int indices[3] = { 0,1,2 };
 
-		std::shared_ptr<Gravel::IndexBuffer> indexBuffer;
+		Gravel::Shared<Gravel::IndexBuffer> indexBuffer;
 		indexBuffer.reset(Gravel::IndexBuffer::Create(indices, std::size(indices)));
 		m_vertexArray->SetIndexBuffer(indexBuffer);
 
+		m_squareVAO = Gravel::VertexArray::Create();
 
-		m_squareVAO.reset(Gravel::VertexArray::Create());
 
-		float squareVertices[3 * 4] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.5f,  0.5f, 0.0f,
-			-0.5f,  0.5f, 0.0f
-
+		float squareVertices[5 * 4] = {
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
 
-		std::shared_ptr<Gravel::VertexBuffer> squareVBO;
+		Gravel::Shared<Gravel::VertexBuffer> squareVBO;
 		squareVBO.reset(Gravel::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
 		squareVBO->SetLayout({
-			{ Gravel::AttributeType::Float3, "position" },
+			{ Gravel::AttributeType::Float3, "a_position" },
+			{ Gravel::AttributeType::Float2, "a_textureCoordinates" }
 			});
 		m_squareVAO->AddVertexBuffer(squareVBO);
 
 		unsigned int squareIndices[6] = { 0,1,2, 2, 3, 0 };
-		std::shared_ptr<Gravel::IndexBuffer> squareIBO;
+		Gravel::Shared<Gravel::IndexBuffer> squareIBO;
 		squareIBO.reset(Gravel::IndexBuffer::Create(squareIndices, std::size(squareIndices)));
 
 		m_squareVAO->SetIndexBuffer(squareIBO);
@@ -66,35 +67,31 @@ public:
 		std::string vertexSource = R"(
 			#version 330 core
 
-			layout(location = 0) in vec3 position;
-			layout(location = 1) in vec4 color;
+			layout(location = 0) in vec3 a_position;
+			layout(location = 1) in vec4 a_color;
 			
-			uniform mat4 viewProjection;
-			uniform mat4 transform;
+			uniform mat4 u_viewProjection;
+			uniform mat4 u_transform;
 
-			out vec3 outPosition;
-			out vec4 outColor;
+			out vec4 v_color;
 
 			void main()
 			{
-				gl_Position = viewProjection * transform * vec4(position, 1.0);
-				outPosition = position;
-				outColor = color;
+				gl_Position = u_viewProjection * u_transform * vec4(a_position, 1.0);
+				v_color = a_color;
 			};
 		)";
 
 		std::string fragmentSource = R"(
 			#version 330 core
 
-			in vec3 outPosition;
-			in vec4 outColor;
-
 			layout(location = 0) out vec4 color;
+
+			in vec4 v_color;
 
 			void main()
 			{
-				color = vec4(outPosition * 0.5 + 0.5, 1);
-				color =  outColor;
+				color = v_color;
 			};
 		)";
 
@@ -103,28 +100,28 @@ public:
 		std::string flatColorVertexSource = R"(
 			#version 330 core
 
-			layout(location = 0) in vec3 position;
-
-			uniform mat4 viewProjection;
-			uniform mat4 transform;
+			layout(location = 0) in vec3 a_position;
 
 
-			out vec3 outPosition;
+			uniform mat4 u_viewProjection;
+			uniform mat4 u_transform;
+
+
+			out vec3 v_position;
 
 			void main()
 			{
-				gl_Position = viewProjection * transform * vec4(position, 1.0);
-				outPosition = position;
+				gl_Position = u_viewProjection * u_transform * vec4(a_position, 1.0);
+				v_position = a_position;
 			};
 		)";
 
 		std::string flatColorFragmentSource = R"(
 			#version 330 core
 
-			in vec3 outPosition;
-			uniform vec3 u_color;
-
 			layout(location = 0) out vec4 color;
+
+			uniform vec3 u_color;
 
 			void main()
 			{
@@ -133,6 +130,41 @@ public:
 		)";
 
 		m_flatColorShader.reset(Gravel::Shader::Create(flatColorVertexSource, flatColorFragmentSource));
+
+
+		std::string textureVertexSource = R"(
+			#version 330 core
+
+			layout(location = 0) in vec3 a_position;
+			layout(location = 1) in vec2 a_textureCoordinates;
+			
+			out vec2 v_textureCoordinates;
+
+			uniform mat4 u_viewProjection;
+			uniform mat4 u_transform;
+
+
+			void main()
+			{
+				gl_Position = u_viewProjection * u_transform * vec4(a_position, 1.0);
+				v_textureCoordinates = a_textureCoordinates;
+			};
+		)";
+
+		std::string textureFragmentSource = R"(
+			#version 330 core
+
+			layout(location = 0) out vec4 color;
+
+			in vec2 v_textureCoordinates;
+
+			void main()
+			{
+				color = vec4(v_textureCoordinates, 0.0, 1.0);
+			};
+		)";
+
+		m_textureShader.reset(Gravel::Shader::Create(textureVertexSource, textureFragmentSource));
 
 
 		//m_shader.reset(new Shader("res/shaders/Basic.shader"));
@@ -198,7 +230,11 @@ public:
 			}
 		}
 
-		Gravel::Renderer::Add(m_shader, m_vertexArray);
+		Gravel::Renderer::Add(m_textureShader, m_squareVAO, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+
+		//triangle
+		//Gravel::Renderer::Add(m_shader, m_vertexArray);
 
 		Gravel::Renderer::EndScene();
 	}
@@ -216,11 +252,11 @@ public:
 	}
 
 private:
-	std::shared_ptr<Gravel::VertexArray> m_vertexArray;
-	std::shared_ptr<Gravel::Shader> m_shader;
+	Gravel::Shared<Gravel::VertexArray> m_vertexArray;
+	Gravel::Shared<Gravel::Shader> m_shader;
 
-	std::shared_ptr<Gravel::VertexArray> m_squareVAO;
-	std::shared_ptr<Gravel::Shader> m_flatColorShader;
+	Gravel::Shared<Gravel::VertexArray> m_squareVAO;
+	Gravel::Shared<Gravel::Shader> m_flatColorShader, m_textureShader;
 
 	Gravel::OrthographicCamera m_camera;
 	glm::vec3 m_cameraPosition;

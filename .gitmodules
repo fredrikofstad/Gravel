@@ -1,9 +1,9 @@
-[submodule "Gravel/vendor/spdlog"]
-	path = Gravel/vendor/spdlog
+[submodule "Gravel/thirdparty/spdlog"]
+	path = Gravel/thirdparty/spdlog
 	url = https://github.com/gabime/spdlog
-[submodule "Gravel/vendor/GLFW"]
-	path = Gravel/vendor/GLFW
-	url = https://github.com/fredrikofstad/glfw
-[submodule "Gravel/vendor/glm"]
-	path = Gravel/vendor/glm
+[submodule "Gravel/thirdparty/glm"]
+	path = Gravel/thirdparty/glm
 	url = https://github.com/g-truc/glm
+[submodule "Gravel/thirdparty/GLFW"]
+	path = Gravel/thirdparty/GLFW
+	url = https://github.com/fredrikofstad/glfw

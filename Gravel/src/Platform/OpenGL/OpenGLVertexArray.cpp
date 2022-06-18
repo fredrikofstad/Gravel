@@ -44,7 +44,7 @@ namespace Gravel {
 		glBindVertexArray(0);
 	}
 
-	void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
+	void OpenGLVertexArray::AddVertexBuffer(const Shared<VertexBuffer>& vertexBuffer)
 	{
 		GR_CORE_ASSERT(vertexBuffer->GetLayout().GetAttributes().size(), "Vertex buffer has no layout.");
 		
@@ -70,7 +70,7 @@ namespace Gravel {
 
 		m_vertexBuffers.push_back(vertexBuffer);
 	}
-	void OpenGLVertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
+	void OpenGLVertexArray::SetIndexBuffer(const Shared<IndexBuffer>& indexBuffer)
 	{
 		glBindVertexArray(m_rendererID);
 		indexBuffer->Bind();

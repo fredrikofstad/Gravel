@@ -15,11 +15,11 @@ namespace Gravel {
 
 	}
 
-	void Renderer::Add(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	void Renderer::Add(const Shared<Shader>& shader, const Shared<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
 		shader->Bind();
-		std::dynamic_pointer_cast<OpenGLShader>(shader)->SetUniformMat4("viewProjection", s_sceneData->ViewProjectionMatrix);
-		std::dynamic_pointer_cast<OpenGLShader>(shader)->SetUniformMat4("transform", transform);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->SetUniformMat4("u_viewProjection", s_sceneData->ViewProjectionMatrix);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->SetUniformMat4("u_transform", transform);
 		vertexArray->Bind();
 		RenderInstruction::Draw(vertexArray);
 	}

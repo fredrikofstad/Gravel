@@ -12,15 +12,15 @@ workspace "Gravel"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
-IncludeDir["GLWF"] = "Gravel/vendor/GLFW/include"
-IncludeDir["Glad"] = "Gravel/vendor/Glad/include"
-IncludeDir["Imgui"] = "Gravel/vendor/imgui"
-IncludeDir["glm"] = "Gravel/vendor/glm/"
+IncludeDir["GLWF"] = "Gravel/thirdparty/GLFW/include"
+IncludeDir["Glad"] = "Gravel/thirdparty/Glad/include"
+IncludeDir["Imgui"] = "Gravel/thirdparty/imgui"
+IncludeDir["glm"] = "Gravel/thirdparty/glm/"
 
 group "Dependencies"
-	include "Gravel/vendor/GLFW"
-	include "Gravel/vendor/Glad"
-	include "Gravel/vendor/imgui"
+	include "Gravel/thirdparty/GLFW"
+	include "Gravel/thirdparty/Glad"
+	include "Gravel/thirdparty/imgui"
 
 group ""
 
@@ -41,8 +41,8 @@ project "Gravel"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl",
+		"%{prj.name}/thirdparty/glm/glm/**.hpp",
+		"%{prj.name}/thirdparty/glm/glm/**.inl",
 	}
 
 	defines
@@ -52,12 +52,12 @@ project "Gravel"
 
 	includedirs
 	{
-		"%{prj.name}/vendor/spdlog/include",
+		"%{prj.name}/thirdparty/spdlog/include",
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/GLFW/include",
-		"%{prj.name}/vendor/Glad/include",
-		"%{prj.name}/vendor/imgui",
-		"%{prj.name}/vendor/glm",
+		"%{prj.name}/thirdparty/GLFW/include",
+		"%{prj.name}/thirdparty/Glad/include",
+		"%{prj.name}/thirdparty/imgui",
+		"%{prj.name}/thirdparty/glm",
 
 		--"%{IncludeDir.GLFW}"
 	}
@@ -113,9 +113,9 @@ project "Sandbox"
 
 	includedirs
 	{
-		"Gravel/vendor/spdlog/include",
+		"Gravel/thirdparty/spdlog/include",
 		"Gravel/src",
-		"Gravel/vendor/",
+		"Gravel/thirdparty/",
 		"%{IncludeDir.glm}",
 	}
 
