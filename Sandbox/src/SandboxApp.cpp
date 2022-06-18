@@ -158,13 +158,19 @@ public:
 
 			in vec2 v_textureCoordinates;
 
+			uniform sampler2D u_texture;
+
 			void main()
 			{
-				color = vec4(v_textureCoordinates, 0.0, 1.0);
+				color = texture(u_texture, v_textureCoordinates);
 			};
 		)";
 
 		m_textureShader.reset(Gravel::Shader::Create(textureVertexSource, textureFragmentSource));
+		m_kanariTexture = Gravel::Texture2D::Create("res/textures/the_pixels.png");
+
+		std::dynamic_pointer_cast<Gravel::OpenGLShader>(m_textureShader)->Bind();
+		std::dynamic_pointer_cast<Gravel::OpenGLShader>(m_textureShader)->SetUniformInt("u_texture", 0);
 
 
 		//m_shader.reset(new Shader("res/shaders/Basic.shader"));
@@ -230,6 +236,7 @@ public:
 			}
 		}
 
+		m_kanariTexture->Bind();
 		Gravel::Renderer::Add(m_textureShader, m_squareVAO, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 
@@ -258,6 +265,7 @@ private:
 	Gravel::Shared<Gravel::VertexArray> m_squareVAO;
 	Gravel::Shared<Gravel::Shader> m_flatColorShader, m_textureShader;
 
+	Gravel::Shared<Gravel::Texture2D> m_kanariTexture;
 	Gravel::OrthographicCamera m_camera;
 	glm::vec3 m_cameraPosition;
 

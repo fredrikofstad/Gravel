@@ -16,6 +16,8 @@ IncludeDir["GLWF"] = "Gravel/thirdparty/GLFW/include"
 IncludeDir["Glad"] = "Gravel/thirdparty/Glad/include"
 IncludeDir["Imgui"] = "Gravel/thirdparty/imgui"
 IncludeDir["glm"] = "Gravel/thirdparty/glm/"
+IncludeDir["stb"] = "Gravel/thirdparty/stb/"
+
 
 group "Dependencies"
 	include "Gravel/thirdparty/GLFW"
@@ -41,6 +43,8 @@ project "Gravel"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/thirdparty/stb/**.h",
+		"%{prj.name}/thirdparty/stb/**.cpp",
 		"%{prj.name}/thirdparty/glm/glm/**.hpp",
 		"%{prj.name}/thirdparty/glm/glm/**.inl",
 	}
@@ -58,6 +62,8 @@ project "Gravel"
 		"%{prj.name}/thirdparty/Glad/include",
 		"%{prj.name}/thirdparty/imgui",
 		"%{prj.name}/thirdparty/glm",
+		"%{prj.name}/thirdparty/stb",
+
 
 		--"%{IncludeDir.GLFW}"
 	}
