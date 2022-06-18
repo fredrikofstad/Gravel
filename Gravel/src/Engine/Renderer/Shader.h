@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <glm/glm.hpp>
 
 struct ShaderStrings
 {
@@ -13,20 +12,11 @@ namespace Gravel {
 	class Shader 
 	{
 	public:
-		Shader(const std::string& filepath);
-		Shader(const std::string& vertexSource, const std::string& fragmentSource);
-		~Shader();
+		virtual ~Shader() = default;
 
-		uint32_t CompileShader(const std::string& vertexSource, const std::string& fragmentSource);
+		virtual void Bind() const = 0;
+		virtual void Unbind() const = 0;
 
-		void Bind() const;
-		void Unbind() const;
-
-		void SetUniformMat4(const std::string& name, const glm::mat4& matrix);
-
-		ShaderStrings ParseShader(const std::string file);
-
-	private:
-		uint32_t m_rendererID;
+		static Shader* Create(const std::string& vertexSource, const std::string& fragmentSource);
 	};
 }

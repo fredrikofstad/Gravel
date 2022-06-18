@@ -2,6 +2,8 @@
 #include <Imgui/imgui.h>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include "Platform/OpenGL/OpenGLShader.h"
 
 class ExampleLayer : public Gravel::Layer
 {
@@ -91,14 +93,14 @@ public:
 
 			void main()
 			{
-				color = vec4(outPosition * 0.5 + 0.5, 1.0);
+				color = vec4(outPosition * 0.5 + 0.5, 1);
 				color =  outColor;
 			};
 		)";
 
-		m_shader.reset(new Gravel::Shader(vertexSource, fragmentSource));
+		m_shader.reset(Gravel::Shader::Create(vertexSource, fragmentSource));
 
-		std::string vertexSource2 = R"(
+		std::string flatColorVertexSource = R"(
 			#version 330 core
 
 			layout(location = 0) in vec3 position;
@@ -116,20 +118,21 @@ public:
 			};
 		)";
 
-		std::string fragmentSource2 = R"(
+		std::string flatColorFragmentSource = R"(
 			#version 330 core
 
 			in vec3 outPosition;
+			uniform vec3 u_color;
 
 			layout(location = 0) out vec4 color;
 
 			void main()
 			{
-				color = vec4(outPosition * 0.5 + 0.5, 1.0);
+				color = vec4(u_color, 1.0);
 			};
 		)";
 
-		m_shader2.reset(new Gravel::Shader(vertexSource2, fragmentSource2));
+		m_flatColorShader.reset(Gravel::Shader::Create(flatColorVertexSource, flatColorFragmentSource));
 
 
 		//m_shader.reset(new Shader("res/shaders/Basic.shader"));
@@ -155,7 +158,7 @@ public:
 
 		else if (Gravel::Input::isKeyPressed(GR_KEY_D))
 			m_cameraRotation -= m_cameraRotationSpeed * deltaTime;
-
+		/*
 		if (Gravel::Input::isKeyPressed(GR_KEY_J))
 			m_squarePosition.x -= 5 * deltaTime;
 
@@ -168,6 +171,7 @@ public:
 		else if (Gravel::Input::isKeyPressed(GR_KEY_K))
 			m_squarePosition.y -= 5 * deltaTime;
 
+			*/
 
 		Gravel::RenderInstruction::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Gravel::RenderInstruction::Clear();
@@ -179,21 +183,31 @@ public:
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
-		for (int i = 0; 1 < 5; i++)
+		std::dynamic_pointer_cast<Gravel::OpenGLShader>(m_flatColorShader)->Bind();
+		std::dynamic_pointer_cast<Gravel::OpenGLShader>(m_flatColorShader)->SetUniformFloat3("u_color", m_squareColor);
+
+
+		for (int y = 0; y < 20; y++)
 		{
-			glm::vec3 pos(i * 0.11f, 0.0f, 0.0f);
-			glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-			Gravel::Renderer::Add(m_shader2, m_squareVAO, transform);
+			for (int x = 0; x < 20; x++)
+			{
+				glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+
+				Gravel::Renderer::Add(m_flatColorShader, m_squareVAO, transform);
+			}
 		}
 
-		//Gravel::Renderer::Add(m_shader, m_vertexArray);
+		Gravel::Renderer::Add(m_shader, m_vertexArray);
 
 		Gravel::Renderer::EndScene();
 	}
 
 	void OnImguiRender() override
 	{
-
+		ImGui::Begin("Settings");
+		ImGui::ColorEdit3("Material color", glm::value_ptr(m_squareColor));
+		ImGui::End();
 	}
 
 	void OnEvent(Gravel::Event& event) override
@@ -206,7 +220,7 @@ private:
 	std::shared_ptr<Gravel::Shader> m_shader;
 
 	std::shared_ptr<Gravel::VertexArray> m_squareVAO;
-	std::shared_ptr<Gravel::Shader> m_shader2;
+	std::shared_ptr<Gravel::Shader> m_flatColorShader;
 
 	Gravel::OrthographicCamera m_camera;
 	glm::vec3 m_cameraPosition;
@@ -217,7 +231,7 @@ private:
 	float m_cameraRotationSpeed = 10.0f;
 
 	glm::vec3 m_squarePosition;
-	//glm::vec3 m_trianglePosition;
+	glm::vec3 m_squareColor = { 0.3, 0.6, 0.34 };
 
 
 

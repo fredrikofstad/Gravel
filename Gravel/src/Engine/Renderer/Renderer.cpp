@@ -1,5 +1,6 @@
 #include "grpch.h"
 #include "Renderer.h"
+#include "Platform/OpenGL/OpenGLShader.h"
 
 namespace Gravel {
 
@@ -17,9 +18,8 @@ namespace Gravel {
 	void Renderer::Add(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
 		shader->Bind();
-		shader->SetUniformMat4("viewProjection", s_sceneData->ViewProjectionMatrix);
-		shader->SetUniformMat4("transform", transform);
-
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->SetUniformMat4("viewProjection", s_sceneData->ViewProjectionMatrix);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->SetUniformMat4("transform", transform);
 		vertexArray->Bind();
 		RenderInstruction::Draw(vertexArray);
 	}
