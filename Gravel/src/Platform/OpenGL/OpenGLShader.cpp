@@ -120,9 +120,12 @@ namespace Gravel {
 			return;
 		}
 
-		// Always detach shaders after a successful link.
-		for (auto id : shaderIDs)
+		// detach shaders after a successful link.
+		for (auto id : shaderIDs) 
+		{
 			glDetachShader(program, id);
+			glDeleteShader(id);
+		}
 
 		// set member var if compilation was a success
 		m_rendererID = program;

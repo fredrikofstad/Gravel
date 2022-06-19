@@ -32,7 +32,7 @@ namespace Gravel {
 		}
 
 	private:
-		static RendererAPI* s_rendererAPI;
+		static Unique<RendererAPI> s_rendererAPI;
 	};
 
 }

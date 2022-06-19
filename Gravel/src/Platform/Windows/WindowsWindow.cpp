@@ -53,7 +53,7 @@ namespace Gravel {
 
 		m_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, m_data.Title.c_str(), nullptr, nullptr);
 		
-		m_context = new OpenGLContext(m_window);
+		m_context = MakeUnique<OpenGLContext>(m_window);
 		m_context->Init();
 
 

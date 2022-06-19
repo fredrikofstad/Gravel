@@ -1,6 +1,6 @@
 workspace "Gravel"
 	architecture "x64"
-	startproject "Sandbox"
+	startproject "Projects"
 
 	configurations
 	{
@@ -101,8 +101,8 @@ project "Gravel"
 		runtime "Release"
 		optimize "on"
 
-project "Sandbox"
-	location "Sandbox"
+project "Projects"
+	location "Projects"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "c++17"

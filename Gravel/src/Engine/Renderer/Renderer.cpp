@@ -4,7 +4,7 @@
 
 namespace Gravel {
 
-	Renderer::SceneData* Renderer::s_sceneData = new Renderer::SceneData;
+	Unique<Renderer::SceneData> Renderer::s_sceneData = MakeUnique<Renderer::SceneData>();
 
 	void Renderer::Init()
 	{

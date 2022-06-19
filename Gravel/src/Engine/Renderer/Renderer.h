@@ -26,7 +26,7 @@ namespace Gravel {
 			glm::mat4 ViewProjectionMatrix;
 		};
 
-		static SceneData* s_sceneData;
+		static Unique<SceneData> s_sceneData;
 	
 	};
 

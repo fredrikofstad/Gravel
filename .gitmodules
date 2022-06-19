@@ -1,9 +1,12 @@
 [submodule "Gravel/thirdparty/spdlog"]
 	path = Gravel/thirdparty/spdlog
 	url = https://github.com/gabime/spdlog
+	branch = master
 [submodule "Gravel/thirdparty/glm"]
 	path = Gravel/thirdparty/glm
 	url = https://github.com/g-truc/glm
+	branch = master
 [submodule "Gravel/thirdparty/GLFW"]
 	path = Gravel/thirdparty/GLFW
 	url = https://github.com/fredrikofstad/glfw
+	branch = master

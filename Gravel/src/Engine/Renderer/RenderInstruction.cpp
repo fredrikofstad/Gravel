@@ -9,6 +9,6 @@ namespace Gravel {
 	// in future specify platform dynamically
 	// OpenGL for now
 
-	RendererAPI* RenderInstruction::s_rendererAPI = new OpenGLRendererAPI;
+	Unique<RendererAPI> RenderInstruction::s_rendererAPI = MakeUnique<OpenGLRendererAPI>();
 
 }

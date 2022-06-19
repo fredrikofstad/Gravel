@@ -1,10 +1,12 @@
 #include <Gravel.h>
+
 #include <Imgui/imgui.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Platform/OpenGL/OpenGLShader.h"
-#include "Platform/OpenGL/OpenGLVertexArray.h"
+
+#include "Test2D.h"
 
 
 class ExampleLayer : public Gravel::Layer
@@ -13,7 +15,7 @@ public:
 	ExampleLayer()
 		: Layer("Example"), m_cameraController(1280.0f/720.0f, true)
 	{
-		m_vertexArray = std::make_shared<Gravel::OpenGLVertexArray>();
+		m_vertexArray = Gravel::VertexArray::Create();
 
 		float vertices[7 * 3] = {
 			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
@@ -148,7 +150,8 @@ class Sandbox : public Gravel::Application
 public:
 	Sandbox()
 	{
-		AddLayer(new ExampleLayer());
+		//AddLayer(new ExampleLayer());
+		AddLayer(new Test2D());
 	}
 	~Sandbox()
 	{

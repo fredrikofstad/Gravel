@@ -12,7 +12,10 @@ namespace Gravel {
 	LayerStack::~LayerStack()
 	{
 		for (Layer* layer : m_layers)
+		{
+			layer->OnDetach();
 			delete layer;
+		}		
 	}
 
 	void LayerStack::AddLayer(Layer* layer)

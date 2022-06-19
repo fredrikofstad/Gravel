@@ -11,7 +11,7 @@ namespace Gravel {
 		switch (Renderer::GetAPI())
 		{
 			case RendererAPI::API::None: GR_CORE_ASSERT(false, "Renderer None not yet implemented"); return nullptr;
-			case RendererAPI::API::OpenGL: return std::make_shared<OpenGLShader>(name, vertexSource, fragmentSource);
+			case RendererAPI::API::OpenGL: return MakeShared<OpenGLShader>(name, vertexSource, fragmentSource);
 			default: GR_CORE_ASSERT(false, "RendererAPI not implemented in Shader's switch"); return nullptr;
 		}
 
@@ -22,7 +22,7 @@ namespace Gravel {
 		switch (Renderer::GetAPI())
 		{
 			case RendererAPI::API::None: GR_CORE_ASSERT(false, "Renderer None not yet implemented"); return nullptr;
-			case RendererAPI::API::OpenGL: return std::make_shared<OpenGLShader>(filepath);
+			case RendererAPI::API::OpenGL: return MakeShared<OpenGLShader>(filepath);
 			default: GR_CORE_ASSERT(false, "RendererAPI not implemented in Shader's switch"); return nullptr;
 		}
 

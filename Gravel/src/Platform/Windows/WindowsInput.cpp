@@ -6,7 +6,7 @@
 
 namespace Gravel {
 
-	Input* Input::s_instance = new WindowsInput();
+	Unique<Input> Input::s_instance = MakeUnique<WindowsInput>();
 
 	bool WindowsInput::isKeyPressedImp(int keycode)
 	{

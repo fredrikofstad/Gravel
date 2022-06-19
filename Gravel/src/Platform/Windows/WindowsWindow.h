@@ -27,7 +27,7 @@ namespace Gravel {
 		virtual void Shutdown();
 	private:
 		GLFWwindow* m_window;
-		RendererContext* m_context;
+		Unique<RendererContext> m_context;
 
 		struct WindowData
 		{

@@ -23,6 +23,6 @@ namespace Gravel {
 		virtual float GetMouseYImp() = 0;
 
 	private:
-		static Input* s_instance;
+		static Unique<Input> s_instance;
 	};
 }
