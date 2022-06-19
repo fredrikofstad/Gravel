@@ -11,12 +11,13 @@ namespace Gravel {
 	{
 	public:
 		OpenGLShader(const std::string& filepath);
-		OpenGLShader(const std::string& vertexSource, const std::string& fragmentSource);
+		OpenGLShader(const std::string& name, const std::string& vertexSource, const std::string& fragmentSource);
 		virtual ~OpenGLShader();
 
 		void Bind() const override;
 		void Unbind() const override;
 
+		virtual const std::string& GetName() const override { return m_name; }
 		void SetUniformInt(const std::string& name, int value);
 
 		void SetUniformFloat(const std::string& name, float value);
@@ -34,5 +35,6 @@ namespace Gravel {
 
 	private:
 		uint32_t m_rendererID;
+		std::string m_name;
 	};
 }

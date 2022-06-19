@@ -24,9 +24,18 @@ namespace Gravel {
 		std::string source = MakeFile(filepath);
 		auto shaderSources = ParseShader(source);
 		CompileShader(shaderSources);
+
+		// set name to filepath name
+		auto finalSlash = filepath.find_last_of("/\\");
+		finalSlash = finalSlash == std::string::npos ? 0 : finalSlash + 1;
+		auto finalDot = filepath.rfind('.');
+		auto count = finalDot == std::string::npos ? filepath.size() - finalSlash : finalDot - finalSlash;
+		m_name = filepath.substr(finalSlash, count);
+
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& vertexSource, const std::string& fragmentSource)
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSource, const std::string& fragmentSource)
+		: m_name(name)
 	{
 		std::unordered_map<GLenum, std::string> shaderSources;
 		shaderSources[GL_VERTEX_SHADER] = vertexSource;
@@ -44,7 +53,9 @@ namespace Gravel {
 	{
 
 		GLuint program = glCreateProgram();
-		std::vector<GLenum> shaderIDs(shaderSources.size());
+		GR_CORE_ASSERT(shaderSources.size() <= 2, "max 2 shaders!")
+		std::array<GLenum, 2> shaderIDs;
+		int shaderIndex = 0;
 
 		for (auto && [type, source] : shaderSources)
 		{
@@ -80,7 +91,7 @@ namespace Gravel {
 
 			// attach if successfully compiled and add id to vector
 			glAttachShader(program, shader);
-			shaderIDs.push_back(shader);
+			shaderIDs[shaderIndex++] = shader;
 		}
 
 		// Link our program
@@ -174,7 +185,7 @@ namespace Gravel {
 
 	{
 		std::string string;
-		std::ifstream stream(filepath, std::ios::in, std::ios::binary);
+		std::ifstream stream(filepath, std::ios::in | std::ios::binary);
 
 		if (!stream) GR_CORE_ERROR("Couldn't read file {0}.", filepath);
 

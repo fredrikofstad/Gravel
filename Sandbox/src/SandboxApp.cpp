@@ -6,11 +6,12 @@
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Platform/OpenGL/OpenGLVertexArray.h"
 
+
 class ExampleLayer : public Gravel::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_camera(-1.6f, 1.6f, -0.9f, 0.9f), m_cameraPosition(0.0f), m_squarePosition(0.0f)
+		: Layer("Example"), m_cameraController(1280.0f/720.0f, true)
 	{
 		m_vertexArray = std::make_shared<Gravel::OpenGLVertexArray>();
 
@@ -64,60 +65,24 @@ public:
 
 		m_squareVAO->SetIndexBuffer(squareIBO);
 
-		m_flatColorShader.reset(Gravel::Shader::Create("res/shaders/flatColor.glsl"));
+		m_flatColorShader = Gravel::Shader::Create("res/shaders/flatColor.glsl");
 
-		m_textureShader.reset(Gravel::Shader::Create("res/shaders/texture2D.glsl"));
+		auto textureShader = m_shaderLibrary.Load("res/shaders/texture2D.glsl");
 		m_kanariTexture = Gravel::Texture2D::Create("res/textures/panda.png");
 
-		std::dynamic_pointer_cast<Gravel::OpenGLShader>(m_textureShader)->Bind();
-		std::dynamic_pointer_cast<Gravel::OpenGLShader>(m_textureShader)->SetUniformInt("u_texture", 0);
+		std::dynamic_pointer_cast<Gravel::OpenGLShader>(textureShader)->Bind();
+		std::dynamic_pointer_cast<Gravel::OpenGLShader>(textureShader)->SetUniformInt("u_texture", 0);
 
-
-		//m_shader.reset(new Shader("res/shaders/Basic.shader"));
 	}
 
 	void OnUpdate(Gravel::Timestep deltaTime) override
 	{
-
-		if (Gravel::Input::isKeyPressed(GR_KEY_LEFT))
-			m_cameraPosition.x -= m_cameraMoveSpeed * deltaTime;
-
-		else if (Gravel::Input::isKeyPressed(GR_KEY_RIGHT))
-			m_cameraPosition.x += m_cameraMoveSpeed * deltaTime;
-
-		if (Gravel::Input::isKeyPressed(GR_KEY_UP))
-			m_cameraPosition.y += m_cameraMoveSpeed * deltaTime;
-
-		else if (Gravel::Input::isKeyPressed(GR_KEY_DOWN))
-			m_cameraPosition.y -= m_cameraMoveSpeed * deltaTime;
-
-		if (Gravel::Input::isKeyPressed(GR_KEY_A))
-			m_cameraRotation += m_cameraRotationSpeed * deltaTime;
-
-		else if (Gravel::Input::isKeyPressed(GR_KEY_D))
-			m_cameraRotation -= m_cameraRotationSpeed * deltaTime;
-		/*
-		if (Gravel::Input::isKeyPressed(GR_KEY_J))
-			m_squarePosition.x -= 5 * deltaTime;
-
-		else if (Gravel::Input::isKeyPressed(GR_KEY_L))
-			m_squarePosition.x += 5 * deltaTime;
-
-		if (Gravel::Input::isKeyPressed(GR_KEY_I))
-			m_squarePosition.y += 5 * deltaTime;
-
-		else if (Gravel::Input::isKeyPressed(GR_KEY_K))
-			m_squarePosition.y -= 5 * deltaTime;
-
-			*/
+		m_cameraController.OnUpdate(deltaTime);
 
 		Gravel::RenderInstruction::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Gravel::RenderInstruction::Clear();
 
-		m_camera.SetPosition(m_cameraPosition);
-		m_camera.SetRotation(m_cameraRotation);
-
-		Gravel::Renderer::StartScene(m_camera);
+		Gravel::Renderer::StartScene(m_cameraController.GetCamera());
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
@@ -136,8 +101,10 @@ public:
 			}
 		}
 
+		auto textureShader = m_shaderLibrary.Get("texture2D");
+
 		m_kanariTexture->Bind();
-		Gravel::Renderer::Add(m_textureShader, m_squareVAO, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		Gravel::Renderer::Add(textureShader, m_squareVAO, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 
 		//triangle
@@ -153,28 +120,23 @@ public:
 		ImGui::End();
 	}
 
-	void OnEvent(Gravel::Event& event) override
+	void OnEvent(Gravel::Event& e) override
 	{
-
+		m_cameraController.OnEvent(e);
 	}
 
 private:
+	Gravel::ShaderLibrary m_shaderLibrary;
 	Gravel::Shared<Gravel::VertexArray> m_vertexArray;
 	Gravel::Shared<Gravel::Shader> m_shader;
 
 	Gravel::Shared<Gravel::VertexArray> m_squareVAO;
-	Gravel::Shared<Gravel::Shader> m_flatColorShader, m_textureShader;
+	Gravel::Shared<Gravel::Shader> m_flatColorShader;
 
 	Gravel::Shared<Gravel::Texture2D> m_kanariTexture;
-	Gravel::OrthographicCamera m_camera;
-	glm::vec3 m_cameraPosition;
 
-	float m_cameraRotation = 0.0f;
+	Gravel::OrthographicCameraConrtoller m_cameraController;
 
-	float m_cameraMoveSpeed = 1.0f;
-	float m_cameraRotationSpeed = 10.0f;
-
-	glm::vec3 m_squarePosition;
 	glm::vec3 m_squareColor = { 0.3, 0.6, 0.34 };
 
 

@@ -51,6 +51,8 @@ namespace Gravel {
 	{
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT(Application::OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT(Application::OnWindowResize));
+
 
 		for (auto it = m_layerStack.end(); it != m_layerStack.begin();)
 		{
@@ -69,8 +71,11 @@ namespace Gravel {
 			Timestep deltaTime = time - m_lastFrameTime;
 			m_lastFrameTime = time;
 			
-			for (Layer* layer : m_layerStack)
-				layer->OnUpdate(deltaTime);
+			if (!m_minimized)
+			{
+				for (Layer* layer : m_layerStack)
+					layer->OnUpdate(deltaTime);
+			}
 
 			//moved to render thread in future
 			m_imguiLayer->Start();
@@ -82,8 +87,25 @@ namespace Gravel {
 		}
 	}
 
-	bool Application::OnWindowClose(WindowCloseEvent& event) {
+	bool Application::OnWindowClose(WindowCloseEvent& event) 
+	{
 		m_running = false;
 		return true;
 	}
+
+	bool Application::OnWindowResize(WindowResizeEvent& event)
+	{
+		if (event.GetWidth() == 0 || event.GetHeight() == 0)
+		{
+			m_minimized = true;
+			return false;
+		}
+		
+		m_minimized = false;
+
+		Renderer::OnWindowResize(event.GetWidth(), event.GetHeight());
+		
+		return false;
+	}
+
 }

@@ -10,6 +10,7 @@ namespace Gravel {
 	public:
 		OrthographicCamera(float left, float right, float bottom, float top);
 
+		void SetProjection(float left, float right, float bottom, float top);
 		const glm::vec3& GetPosition() const { return m_position; }
 		void SetPosition(const glm::vec3& position) 
 		{
@@ -18,6 +19,7 @@ namespace Gravel {
 		}
 		const float GetRotation() const{ return m_rotation; }
 		void SetRotation(const float rotation) { m_rotation = rotation; }
+
 
 		const glm::mat4& GetProjectionMatrix() const { return m_projectionMatrix; }
 		const glm::mat4& GetViewnMatrix() const { return m_viewMatrix; }

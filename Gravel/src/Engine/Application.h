@@ -31,10 +31,13 @@ namespace Gravel {
 		inline static Application& Get() { return *s_instance; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
+		bool OnWindowResize(WindowResizeEvent& event);
 
-		std::unique_ptr<Window> m_window;
+
+		Unique<Window> m_window;
 		ImguiLayer* m_imguiLayer;
 		bool m_running = true;
+		bool m_minimized = false;
 		LayerStack m_layerStack;
 		float m_lastFrameTime = 0.0f;
 	private:

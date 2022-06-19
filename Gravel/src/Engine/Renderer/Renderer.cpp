@@ -29,4 +29,10 @@ namespace Gravel {
 		RenderInstruction::Draw(vertexArray);
 	}
 
+	void Renderer::OnWindowResize(uint32_t width, uint32_t height)
+	{
+		RenderInstruction::SetViewport(0, 0, width, height);
+	}
+
+
 }
