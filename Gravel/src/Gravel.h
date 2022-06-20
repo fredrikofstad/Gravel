@@ -14,6 +14,8 @@
 
 // Renderer
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Renderer/Renderer2D.h"
+
 #include "Engine/Renderer/RenderInstruction.h"
 
 #include "Engine/Renderer/Buffer.h"
@@ -25,5 +27,4 @@
 #include "Engine/Camera/OrthographicCamera.h"
 #include "Engine/Camera/OrthographicCameraController.h"
 
-//Entry point
-#include "Engine/Core/EntryPoint.h"
+

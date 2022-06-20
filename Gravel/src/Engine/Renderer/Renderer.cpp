@@ -1,5 +1,7 @@
 #include "grpch.h"
 #include "Renderer.h"
+#include "Renderer2D.h"
+
 #include "Platform/OpenGL/OpenGLShader.h"
 
 namespace Gravel {
@@ -9,6 +11,7 @@ namespace Gravel {
 	void Renderer::Init()
 	{
 		RenderInstruction::Init();
+		Renderer2D::Init();
 	}
 
 	void Renderer::StartScene(OrthographicCamera& camera)

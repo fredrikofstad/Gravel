@@ -1,4 +1,5 @@
 #include <Gravel.h>
+#include "Engine/Core/EntryPoint.h"
 
 #include <Imgui/imgui.h>
 
@@ -24,7 +25,7 @@ public:
 		};
 
 		Gravel::Shared<Gravel::VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(Gravel::VertexBuffer::Create(vertices, sizeof(vertices)));
+		vertexBuffer = Gravel::VertexBuffer::Create(vertices, sizeof(vertices));
 
 		Gravel::BufferLayout layout = {
 
@@ -40,7 +41,7 @@ public:
 		unsigned int indices[3] = { 0,1,2 };
 
 		Gravel::Shared<Gravel::IndexBuffer> indexBuffer;
-		indexBuffer.reset(Gravel::IndexBuffer::Create(indices, std::size(indices)));
+		indexBuffer = Gravel::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 		m_vertexArray->SetIndexBuffer(indexBuffer);
 
 		m_squareVAO = Gravel::VertexArray::Create();
@@ -54,7 +55,7 @@ public:
 		};
 
 		Gravel::Shared<Gravel::VertexBuffer> squareVBO;
-		squareVBO.reset(Gravel::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+		squareVBO = Gravel::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
 		squareVBO->SetLayout({
 			{ Gravel::AttributeType::Float3, "a_position" },
 			{ Gravel::AttributeType::Float2, "a_textureCoordinates" }
@@ -63,11 +64,11 @@ public:
 
 		unsigned int squareIndices[6] = { 0,1,2, 2, 3, 0 };
 		Gravel::Shared<Gravel::IndexBuffer> squareIBO;
-		squareIBO.reset(Gravel::IndexBuffer::Create(squareIndices, std::size(squareIndices)));
+		squareIBO = Gravel::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
 
 		m_squareVAO->SetIndexBuffer(squareIBO);
 
-		m_flatColorShader = Gravel::Shader::Create("res/shaders/flatColor.glsl");
+		m_flatColorShader = Gravel::Shader::Create("res/shaders/flatColor3f.glsl");
 
 		auto textureShader = m_shaderLibrary.Load("res/shaders/texture2D.glsl");
 		m_kanariTexture = Gravel::Texture2D::Create("res/textures/panda.png");

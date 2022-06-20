@@ -3,6 +3,7 @@
 
 #include "spdlog/sinks/stdout_sinks.h"
 
+
 namespace Gravel {
 
 	Shared<spdlog::logger> Log::s_coreLogger;

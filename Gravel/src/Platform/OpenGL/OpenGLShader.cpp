@@ -141,6 +141,27 @@ namespace Gravel {
 		glUseProgram(0);
 	}
 
+	void OpenGLShader::SetInt(const std::string& name, int value)
+	{
+		SetUniformInt(name, value);
+
+	}
+
+	void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3& floats)
+	{
+		SetUniformFloat3(name, floats);
+	}
+
+	void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& floats)
+	{
+		SetUniformFloat4(name, floats);
+	}
+
+	void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& matrix)
+	{
+		SetUniformMat4(name, matrix);
+	}
+
 
 	void OpenGLShader::SetUniformInt(const std::string& name, int value)
 	{
