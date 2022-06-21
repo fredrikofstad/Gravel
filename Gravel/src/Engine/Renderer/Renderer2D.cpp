@@ -12,8 +12,8 @@ namespace Gravel {
 	struct RendererData
 	{
 		Shared<VertexArray> VertexArray;
-		Shared<Shader> ColorShader;
-		Shared<Shader> TextureShader;
+		Shared<Shader> Shader;
+		Shared<Texture2D> WhiteTexture;
 	};
 
 	static RendererData* s_data;
@@ -46,13 +46,17 @@ namespace Gravel {
 		unsigned int indices[6] = { 0,1,2, 2, 3, 0 };
 
 		Shared<IndexBuffer> indexBuffer;
+
 		indexBuffer = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 		s_data->VertexArray->SetIndexBuffer(indexBuffer);
 
-		s_data->ColorShader = Shader::Create("res/shaders/flatColor.glsl");
-		s_data->TextureShader = Shader::Create("res/shaders/texture2D.glsl");
-		s_data->TextureShader->Bind();
-		s_data->TextureShader->SetInt("u_texture", 0);
+		s_data->WhiteTexture = Texture2D::Create(1,1);
+		uint32_t whiteTextureData = 0xffffffff;
+		s_data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+
+		s_data->Shader = Shader::Create("res/shaders/texture2D.glsl");
+		s_data->Shader->Bind();
+		s_data->Shader->SetInt("u_texture", 0);
 	}
 
 	void Renderer2D::ShutDown()
@@ -62,11 +66,8 @@ namespace Gravel {
 
 	void Renderer2D::StartScene(const OrthographicCamera& camera)
 	{
-		s_data->ColorShader->Bind();
-		s_data->ColorShader->SetMat4("u_viewProjection", camera.GetViewProjectionMatrix());
-		s_data->TextureShader->Bind();
-		s_data->TextureShader->SetMat4("u_viewProjection", camera.GetViewProjectionMatrix());
-
+		s_data->Shader->Bind();
+		s_data->Shader->SetMat4("u_viewProjection", camera.GetViewProjectionMatrix());
 	}
 
 	void Renderer2D::EndScene()
@@ -81,12 +82,12 @@ namespace Gravel {
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
-		s_data->ColorShader->Bind();
-		s_data->ColorShader->SetFloat4("u_color", color);
+		s_data->Shader->SetFloat4("u_color", color);
+		s_data->WhiteTexture->Bind();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * //rotation//
 			glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
-		s_data->ColorShader->SetMat4("u_transform", transform);
+		s_data->Shader->SetMat4("u_transform", transform);
 
 		s_data->VertexArray->Bind();
 		RenderInstruction::Draw(s_data->VertexArray);
@@ -95,18 +96,18 @@ namespace Gravel {
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Shared<Texture2D>& texture)
 	{
 		DrawQuad({ position.x, position.y, 0.0f }, size, texture);
-
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Shared<Texture2D>& texture)
 	{
-		s_data->TextureShader->Bind();
+		s_data->Shader->SetFloat4("u_color", glm::vec4(1.0f));
+
+		texture->Bind();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * //rotation//
 			glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-		s_data->TextureShader->SetMat4("u_transform", transform);
+		s_data->Shader->SetMat4("u_transform", transform);
 
-		texture->Bind();
 
 		s_data->VertexArray->Bind();
 		RenderInstruction::Draw(s_data->VertexArray);

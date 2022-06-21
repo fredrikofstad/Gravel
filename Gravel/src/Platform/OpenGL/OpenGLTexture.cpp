@@ -2,14 +2,26 @@
 #include "OpenGLTexture.h"
 
 #include "stb_image.h"
-#include <glad/glad.h>
 
 
 namespace Gravel {
+	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
+		: m_width(width), m_height(height), m_glFormat(GL_RGBA8), m_dataFormat(GL_RGBA)
+	{
+		// create textures in gl format
+		glCreateTextures(GL_TEXTURE_2D, 1, &m_rendererID);
+		// allocate memory for texture storage
+		glTextureStorage2D(m_rendererID, 1, m_glFormat, m_width, m_height);
+		// set how we shrink or expand texture if not 1 to 1 mapping
+		glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(m_rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+		glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+	}
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& filepath)
-		: m_filepath(filepath)
+		: m_filepath(filepath), m_glFormat(GL_RGBA8), m_dataFormat(GL_RGBA)
 	{
 		int width, height, channels;
 		// using stb_image to import asset, provide references
@@ -19,11 +31,10 @@ namespace Gravel {
 		m_width = width;
 		m_height = height;
 
-		GLenum openGLFormat = 0, dataFormat = 0;
 		switch (channels)
 		{
-			case 3: openGLFormat = GL_RGB8; dataFormat = GL_RGB; break;
-			case 4: openGLFormat = GL_RGBA8; dataFormat = GL_RGBA; break;
+			case 3: m_glFormat = GL_RGB8; m_dataFormat = GL_RGB; break;
+			case 4: m_glFormat = GL_RGBA8; m_dataFormat = GL_RGBA; break;
 			default: GR_CORE_ASSERT(false, "Channel not supported.");
 		}
 
@@ -32,18 +43,25 @@ namespace Gravel {
 		// create textures in gl format
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_rendererID);
 		// allocate memory for texture storage
-		glTextureStorage2D(m_rendererID, 1, openGLFormat, m_width, m_height);
+		glTextureStorage2D(m_rendererID, 1, m_glFormat, m_width, m_height);
 		// set how we shrink or expand texture if not 1 to 1 mapping
 		glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(m_rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		// upload texture
-		glTextureSubImage2D(m_rendererID, 0, 0, 0, m_width, m_height, dataFormat, GL_UNSIGNED_BYTE, data);
+		glTextureSubImage2D(m_rendererID, 0, 0, 0, m_width, m_height, m_dataFormat, GL_UNSIGNED_BYTE, data);
 		// free memory from data pointer
 		stbi_image_free(data);
 	}
 	OpenGLTexture2D::~OpenGLTexture2D()
 	{
 		glDeleteTextures(1, &m_rendererID);
+	}
+
+	void OpenGLTexture2D::SetData(void* data, uint32_t size)
+	{
+		uint32_t bpp = m_dataFormat == GL_RGBA ? 4 : 3;
+		GR_CORE_ASSERT(size == m_width * m_height * bpp, "Data must be the entire texture.");
+		glTextureSubImage2D(m_rendererID, 0, 0, 0, m_width, m_height, m_dataFormat, GL_UNSIGNED_BYTE, data);
 	}
 
 	void OpenGLTexture2D::Bind(uint32_t slot) const
