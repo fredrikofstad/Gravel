@@ -86,10 +86,4 @@ namespace Gravel {
 		}
 	}
 
-	void ImguiLayer::OnImguiRender()
-	{
-		static bool show = false;
-		ImGui::ShowDemoWindow(&show);
-	}
-
 }

@@ -21,7 +21,6 @@ private:
 
 	glm::vec4 m_materialColor = { 0.3, 0.6, 0.34, 1.0f };
 
-
 	Gravel::OrthographicCameraConrtoller m_cameraController;
 
 };

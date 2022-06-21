@@ -18,7 +18,6 @@ namespace Gravel {
 
 		void OnAttach() override;
 		void OnDetach() override;
-		void OnImguiRender() override;
 
 		void Start();
 		void End();

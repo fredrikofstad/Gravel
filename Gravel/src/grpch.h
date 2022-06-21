@@ -3,6 +3,8 @@
 #include "Engine/Core/Log.h"
 #include "Engine/Core/Core.h"
 
+#include "Engine/Debug/Instrumentor.h"
+
 #include <iostream>
 #include <memory>
 #include <utility>

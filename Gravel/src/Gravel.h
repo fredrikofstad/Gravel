@@ -27,4 +27,8 @@
 #include "Engine/Camera/OrthographicCamera.h"
 #include "Engine/Camera/OrthographicCameraController.h"
 
+// Debug
+
+#include "Engine/Debug/Timer.h"
+
 

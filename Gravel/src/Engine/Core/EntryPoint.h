@@ -11,10 +11,17 @@ int main(int argc, char** argv)
 	GR_CORE_WARN("Initialized Gravel Log.");
 	GR_INFO("Initialized Client Log.");
 
+	GR_PROFILE_BEGIN_SESSION("Startup", "log/Profile-Startup.json");
 	auto app = Gravel::CreateApplication();
-	app->Run();
-	delete app;
+	GR_PROFILE_END_SESSION();
 
+	GR_PROFILE_BEGIN_SESSION("Runtime", "log/Profile-Runtime.json");
+	app->Run();
+	GR_PROFILE_END_SESSION();
+
+	GR_PROFILE_BEGIN_SESSION("Startup", "log/Profile-Shutdown.json");
+	delete app;
+	GR_PROFILE_END_SESSION();
 }
 
 #endif
