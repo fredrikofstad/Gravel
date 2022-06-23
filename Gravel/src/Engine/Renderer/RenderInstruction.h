@@ -21,9 +21,9 @@ namespace Gravel {
 			s_rendererAPI->Clear();
 		}
 
-		inline static void Draw(const Shared<VertexArray>& vertexArray)
+		inline static void Draw(const Shared<VertexArray>& vertexArray, uint32_t indexCount = 0)
 		{
-			s_rendererAPI->Draw(vertexArray);
+			s_rendererAPI->Draw(vertexArray, indexCount);
 		}
 
 		inline static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)

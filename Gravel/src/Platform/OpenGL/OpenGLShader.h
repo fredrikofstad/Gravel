@@ -18,12 +18,15 @@ namespace Gravel {
 		void Unbind() const override;
 
 		virtual void SetInt(const std::string& name, int value) override;
+		virtual void SetIntArray(const std::string& name, int* values, uint32_t count) override;
+		virtual void SetFloat(const std::string& name, float value) override;
 		virtual void SetFloat3(const std::string& name, const glm::vec3& floats) override;
 		virtual void SetFloat4(const std::string& name, const glm::vec4& floats) override;
 		virtual void SetMat4(const std::string& name, const glm::mat4& matrix) override;
 
 		virtual const std::string& GetName() const override { return m_name; }
 		void SetUniformInt(const std::string& name, int value);
+		void SetUniformIntArray(const std::string& name, int* values, uint32_t count);
 
 		void SetUniformFloat(const std::string& name, float value);
 		void SetUniformFloat2(const std::string& name, const glm::vec2& values);

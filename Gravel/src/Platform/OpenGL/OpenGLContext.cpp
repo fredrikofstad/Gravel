@@ -13,6 +13,8 @@ namespace Gravel{
 
 	void OpenGLContext::Init()
 	{
+		GR_PROFILE_FUNCTION();
+
 		glfwMakeContextCurrent(m_window);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		GR_CORE_ASSERT(status, "Failed to initialize Glad.");
@@ -25,6 +27,8 @@ namespace Gravel{
 
 	void OpenGLContext::SwapBuffers()
 	{
+		GR_PROFILE_FUNCTION();
+
 		glfwSwapBuffers(m_window);
 	}
 

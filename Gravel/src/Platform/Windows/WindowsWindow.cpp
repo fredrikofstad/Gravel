@@ -6,6 +6,7 @@
 #include "Engine/Events/ApplicationEvent.h"
 
 #include "Platform/OpenGL/OpenGLContext.h"
+#include "Engine/Renderer/Renderer.h"
 
 namespace Gravel {
 
@@ -23,16 +24,21 @@ namespace Gravel {
 
 	WindowsWindow::WindowsWindow(const WindowProperties& properties)
 	{
+		GR_PROFILE_FUNCTION();
 		Init(properties);
 	}
 
 	WindowsWindow::~WindowsWindow()
 	{
+		GR_PROFILE_FUNCTION();
+
 		Shutdown();
 	}
 
 	void WindowsWindow::Init(const WindowProperties& properties)
 	{
+		GR_PROFILE_FUNCTION();
+
 		m_data.Title = properties.Title;
 		m_data.Width = properties.Width;
 		m_data.Height = properties.Height;
@@ -49,6 +55,11 @@ namespace Gravel {
 			glfwSetErrorCallback(GLFWErrorCallback);
 			s_GLFWInitialized = true;
 		}
+
+		#if defined(GR_DEBUG)
+			if (Renderer::GetAPI() == RendererAPI::API::OpenGL)
+				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+		#endif
 
 
 		m_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, m_data.Title.c_str(), nullptr, nullptr);
@@ -151,11 +162,15 @@ namespace Gravel {
 
 	void WindowsWindow::Shutdown()
 	{
+		GR_PROFILE_FUNCTION();
+
 		glfwDestroyWindow(m_window);
 	}
 
 	void WindowsWindow::OnUpdate()
 	{
+		GR_PROFILE_FUNCTION();
+
 		glfwPollEvents();
 
 		m_context->SwapBuffers();
@@ -163,6 +178,8 @@ namespace Gravel {
 
 	void WindowsWindow::SetVSync(bool enabled)
 	{
+		GR_PROFILE_FUNCTION();
+
 		if (enabled)
 			glfwSwapInterval(1);
 		else

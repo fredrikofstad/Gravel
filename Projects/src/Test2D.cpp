@@ -11,13 +11,14 @@ Test2D::Test2D()
 
 void Test2D::OnAttach()
 {
-	m_texture = Gravel::Texture2D::Create("res/textures/panda.png");
+	GR_PROFILE_FUNCTION();
 
+	m_texture = Gravel::Texture2D::Create("res/textures/panda.png");
 }
 
 void Test2D::OnDetach()
 {
-
+	GR_PROFILE_FUNCTION();
 }
 
 void Test2D::OnUpdate(Gravel::Timestep deltaTime)
@@ -38,12 +39,20 @@ void Test2D::OnUpdate(Gravel::Timestep deltaTime)
 	{
 		GR_PROFILE_SCOPE("Renderer Draw");
 
+		static float rotation = 0.0f;
+		rotation += deltaTime * 50.0f;
+
 		Gravel::Renderer2D::StartScene(m_cameraController.GetCamera());
 
-		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
 		Gravel::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.2f, 0.2f, 0.85f, 1.0f });
 		Gravel::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, { 0.2f, 0.8f, 0.14f, 1.0f });
-		Gravel::Renderer2D::DrawQuad({ 0.2f, 0.5f }, { 0.5f, 0.75f }, m_texture);
+		Gravel::Renderer2D::DrawQuad({ 0.5f, 1.0f, 0.0f }, { 1.6f, 1.6f }, m_materialColor);
+		Gravel::Renderer2D::DrawQuad({ 0.5f, 1.0f, 0.1f }, { 1.0f, 1.5f }, m_texture, 1.0f, {1.0f, 1.0f, 0.5f, 0.5f});
+		Gravel::Renderer2D::DrawQuad({ -0.5f, 1.0f }, { 1.0f, 1.5f }, m_texture, 1.0f, {1.0f,0.0f,1.0f,1.0f});
+		Gravel::Renderer2D::DrawRotateQuad({ -2.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, rotation, m_texture, 10.0f);
+		Gravel::Renderer2D::DrawRotateQuad({  2.0f, 0.0f, 0.1f }, { 1.0f, 1.5f }, -rotation, m_texture, 1.0f);
+
+
 
 		Gravel::Renderer2D::EndScene();
 	}

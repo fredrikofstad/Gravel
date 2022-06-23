@@ -17,6 +17,9 @@ namespace Gravel {
 
 	Application::Application()
 	{
+		GR_PROFILE_FUNCTION();
+
+
 		GR_CORE_ASSERT(!s_instance, "Instance of application already exits.")
 		s_instance = this;
 
@@ -49,6 +52,8 @@ namespace Gravel {
 
 	void Application::OnEvent(Event& event)
 	{
+		GR_PROFILE_FUNCTION();
+
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT(Application::OnWindowResize));
@@ -64,8 +69,11 @@ namespace Gravel {
 
 	void Application::Run()
 	{
+		GR_PROFILE_FUNCTION();
+
 		while (m_running) 
 		{
+			GR_PROFILE_SCOPE("Run loop")
 			//consider getting time from platform
 			float time = (float)glfwGetTime();
 			Timestep deltaTime = time - m_lastFrameTime;
@@ -73,16 +81,19 @@ namespace Gravel {
 			
 			if (!m_minimized)
 			{
+				GR_PROFILE_SCOPE("Layers OnUpdate")
 				for (Layer* layer : m_layerStack)
 					layer->OnUpdate(deltaTime);
 			}
 
 			//moved to render thread in future
 			m_imguiLayer->Start();
-			for (Layer* layer : m_layerStack)
-				layer->OnImguiRender();
-			m_imguiLayer->End();
-
+			{
+				GR_PROFILE_SCOPE("Layers ImguiRender")
+				for (Layer* layer : m_layerStack)
+					layer->OnImguiRender();
+				m_imguiLayer->End();
+			}
 			m_window->OnUpdate();
 		}
 	}
@@ -95,6 +106,8 @@ namespace Gravel {
 
 	bool Application::OnWindowResize(WindowResizeEvent& event)
 	{
+		GR_PROFILE_FUNCTION()
+
 		if (event.GetWidth() == 0 || event.GetHeight() == 0)
 		{
 			m_minimized = true;

@@ -20,8 +20,7 @@ namespace Gravel {
 		
 		virtual void Clear() = 0;
 
-		virtual void Draw(const Shared<VertexArray>& vertexArray) = 0;
-
+		virtual void Draw(const Shared<VertexArray>& vertexArray, uint32_t indexCount = 0) = 0;
 
 
 		inline static API GetAPI() { return s_API; }
