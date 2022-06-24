@@ -14,6 +14,8 @@ void Test2D::OnAttach()
 	GR_PROFILE_FUNCTION();
 
 	m_texture = Gravel::Texture2D::Create("res/textures/panda.png");
+	m_texture = Gravel::Texture2D::Create("res/textures/kappa.png");
+
 }
 
 void Test2D::OnDetach()
@@ -29,6 +31,8 @@ void Test2D::OnUpdate(Gravel::Timestep deltaTime)
 		GR_PROFILE_SCOPE("CameraController::OnUpdate");
 		m_cameraController.OnUpdate(deltaTime);
 	}
+
+	Gravel::Renderer2D::ResetStatistics();
 
 	{
 		GR_PROFILE_SCOPE("Renderer Prep");
@@ -63,9 +67,18 @@ void Test2D::OnImguiRender()
 {
 	GR_PROFILE_FUNCTION();
 
-	ImGui::Begin("Settings");
-	ImGui::ColorEdit4("Color", glm::value_ptr(m_materialColor));
+	ImGui::Begin("Statistics");
 
+	auto statistics = Gravel::Renderer2D::GetStatistics();
+	ImGui::Text("Renderer2D statistics:");
+	ImGui::Text("Draw Calls: %d", statistics.DrawCalls);
+	ImGui::Text("Quad Count: %d", statistics.QuadCount);
+	ImGui::Text("Vertices: %d", statistics.GetTotalVertexCount());
+	ImGui::Text("Indices: %d", statistics.GetTotalIndexCount());
+	ImGui::End();
+
+	ImGui::Begin("Material");
+	ImGui::ColorEdit4("Color", glm::value_ptr(m_materialColor));
 	ImGui::End();
 }
 

@@ -18,6 +18,8 @@ private:
 	//Gravel::Shared<Gravel::Shader> m_shader;
 
 	Gravel::Shared<Gravel::Texture2D> m_texture;
+	Gravel::Shared<Gravel::Texture2D> m_kappa;
+
 
 	glm::vec4 m_materialColor = { 0.3, 0.6, 0.34, 1.0f };
 

@@ -21,9 +21,9 @@ namespace Gravel {
 
 	struct RendererData
 	{
-		const uint32_t MaxQuads = 10000;
-		const uint32_t MaxVerticies = MaxQuads * 4;
-		const uint32_t MaxIndices = MaxQuads * 6;
+		static const uint32_t MaxQuads = 10000;
+		static const uint32_t MaxVerticies = MaxQuads * 4;
+		static const uint32_t MaxIndices = MaxQuads * 6;
 		static const uint32_t MaxTextureSlots = 32;
 
 
@@ -39,6 +39,8 @@ namespace Gravel {
 		Shared<Shader> Shader;
 		Shared<Texture2D> WhiteTexture;
 		glm::vec4 VertexPositions[4];
+
+		Renderer2D::Statistics Statistics;
 	};
 
 	static RendererData s_data;
@@ -120,11 +122,7 @@ namespace Gravel {
 
 		s_data.Shader->Bind();
 		s_data.Shader->SetMat4("u_viewProjection", camera.GetViewProjectionMatrix());
-		// keeping track of wherer we are in buffer
-		s_data.IndexCount = 0;
-		s_data.BufferPointer = s_data.BufferBase;
-
-		s_data.TextureSlotIndex = 1;
+		StartBatch();
 	}
 
 	void Renderer2D::EndScene()
@@ -137,10 +135,23 @@ namespace Gravel {
 
 	void Renderer2D::Flush()
 	{
+		if (s_data.IndexCount == 0)
+			return;
+
 		for (uint32_t i = 0; i < s_data.TextureSlotIndex; i++)
 			s_data.TextureSlots[i]->Bind(i);
 
 		RenderInstruction::Draw(s_data.VertexArray, s_data.IndexCount);
+		s_data.Statistics.DrawCalls++;
+	}
+
+	void Renderer2D::StartBatch()
+	{
+		// keeping track of wherer we are in buffer
+		s_data.IndexCount = 0;
+		s_data.BufferPointer = s_data.BufferBase;
+
+		s_data.TextureSlotIndex = 1;
 	}
 
 
@@ -152,6 +163,13 @@ namespace Gravel {
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
 		GR_PROFILE_FUNCTION();
+
+		if (s_data.IndexCount >= s_data.MaxIndices)
+		{
+			EndScene();
+			StartBatch();
+		}
+
 
 		const float textureIndex = 0.0f;
 		const float tiling = 1.0f;
@@ -190,6 +208,9 @@ namespace Gravel {
 
 		s_data.IndexCount += 6; //incrementing 6 indices
 
+		s_data.Statistics.QuadCount++;
+
+
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Shared<Texture2D>& texture, float tiling, const glm::vec4& tintColor)
@@ -200,6 +221,12 @@ namespace Gravel {
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Shared<Texture2D>& texture, float tiling, const glm::vec4& tintColor)
 	{
 		GR_PROFILE_FUNCTION();
+
+		if (s_data.IndexCount >= s_data.MaxIndices)
+		{
+			EndScene();
+			StartBatch();
+		}
 
 		glm::vec4 color = tintColor;
 
@@ -258,6 +285,9 @@ namespace Gravel {
 
 		s_data.IndexCount += 6; //incrementing 6 indices
 
+		s_data.Statistics.QuadCount++;
+
+
 	}
 
 	void Renderer2D::DrawRotateQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Shared<Texture2D>& texture, float tiling, const glm::vec4& tintColor)
@@ -268,6 +298,12 @@ namespace Gravel {
 	void Renderer2D::DrawRotateQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Shared<Texture2D>& texture, float tiling, const glm::vec4& tintColor)
 	{
 		GR_PROFILE_FUNCTION();
+
+		if (s_data.IndexCount >= s_data.MaxIndices)
+		{
+			EndScene();
+			StartBatch();
+		}
 
 		glm::vec4 color = tintColor;
 
@@ -326,6 +362,18 @@ namespace Gravel {
 
 		s_data.IndexCount += 6; //incrementing 6 indices
 
+		s_data.Statistics.QuadCount++;
+
+	}
+
+	Renderer2D::Statistics Renderer2D::GetStatistics()
+	{
+		return s_data.Statistics;
+	}
+
+	void Renderer2D::ResetStatistics()
+	{
+		memset(&s_data.Statistics, 0, sizeof(Renderer2D::Statistics));
 	}
 
 }
