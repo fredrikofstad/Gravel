@@ -11,6 +11,7 @@
 #include "Imgui/ImguiLayer.h"
 
 
+int main(int argc, char** argv);
 
 namespace Gravel {
 
@@ -20,7 +21,6 @@ namespace Gravel {
 		Application();
 		virtual ~Application();
 
-		void Run();
 		void OnEvent(Event& event);
 
 		void AddLayer(Layer* layer);
@@ -28,12 +28,15 @@ namespace Gravel {
 
 		inline Window& GetWindow() { return *m_window; }
 
+		void Close();
+		void Run();
+
 		inline static Application& Get() { return *s_instance; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
 		bool OnWindowResize(WindowResizeEvent& event);
 
-
+	private:
 		Unique<Window> m_window;
 		ImguiLayer* m_imguiLayer;
 		bool m_running = true;
@@ -42,9 +45,9 @@ namespace Gravel {
 		float m_lastFrameTime = 0.0f;
 	private:
 		static Application* s_instance;
+		friend int ::main(int argc, char** argv);
 	};
 
-	//defined in client
 	Application* CreateApplication();
 
 }

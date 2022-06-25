@@ -10,6 +10,7 @@ namespace Gravel {
 	{
 	public:
 		static void Init();
+		static void Shutdown();
 
 		static void StartScene(OrthographicCamera& camera);
 		static void EndScene();

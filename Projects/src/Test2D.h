@@ -18,11 +18,14 @@ private:
 	//Gravel::Shared<Gravel::Shader> m_shader;
 
 	Gravel::Shared<Gravel::Texture2D> m_texture;
-	Gravel::Shared<Gravel::Texture2D> m_kappa;
-
+	Gravel::Shared<Gravel::Texture2D> m_kappaTexture;
+	Gravel::Shared<Gravel::SubTexture> m_bush, m_tile, m_tree;
 
 	glm::vec4 m_materialColor = { 0.3, 0.6, 0.34, 1.0f };
 
 	Gravel::OrthographicCameraConrtoller m_cameraController;
+
+	uint32_t m_mapWidth, m_mapHeight;
+	std::unordered_map<char, Gravel::Shared<Gravel::SubTexture>> s_textureMap;
 
 };

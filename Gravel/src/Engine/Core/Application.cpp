@@ -10,7 +10,6 @@
 
 namespace Gravel {
 
-#define BIND_EVENT(x) std::bind(&x, this, std::placeholders::_1)
 
 	Application* Application::s_instance = nullptr;
 
@@ -24,7 +23,7 @@ namespace Gravel {
 		s_instance = this;
 
 		m_window = Unique<Window>(Window::Create());
-		m_window->SetEventCallback(BIND_EVENT(Application::OnEvent));
+		m_window->SetEventCallback(GR_BIND_EVENT(Application::OnEvent));
 
 		Renderer::Init();
 
@@ -35,18 +34,30 @@ namespace Gravel {
 
 	Application::~Application()
 	{
+		GR_PROFILE_FUNCTION();
+
+		Renderer::Shutdown();
 	}
 
 	void Application::AddLayer(Layer* layer)
 	{
+		GR_PROFILE_FUNCTION();
+
 		m_layerStack.AddLayer(layer);
 		layer->OnAttach();
 	}
 
 	void Application::AddOverlay(Layer* layer)
 	{
+		GR_PROFILE_FUNCTION();
+
 		m_layerStack.AddOverlay(layer);
 		layer->OnAttach();
+	}
+
+	void Application::Close()
+	{
+		m_running = false;
 	}
 
 
@@ -55,15 +66,15 @@ namespace Gravel {
 		GR_PROFILE_FUNCTION();
 
 		EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT(Application::OnWindowClose));
-		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT(Application::OnWindowResize));
+		dispatcher.Dispatch<WindowCloseEvent>(GR_BIND_EVENT(Application::OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(GR_BIND_EVENT(Application::OnWindowResize));
 
 
 		for (auto it = m_layerStack.end(); it != m_layerStack.begin();)
 		{
-			(*--it)->OnEvent(event);
 			if (event.Handled)
 				break;
+			(*--it)->OnEvent(event);
 		}
 	}
 

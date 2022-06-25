@@ -50,18 +50,24 @@ namespace Gravel {
 		dispatcher.Dispatch<WindowResizeEvent>(GR_BIND_EVENT(OrthographicCameraConrtoller::OnWindowResized));
 	}
 
+	void OrthographicCameraConrtoller::CalculateView()
+	{
+		m_bounds = { -m_aspectRatio * m_zoom, m_aspectRatio * m_zoom, -m_zoom, m_zoom };
+		m_camera.SetProjection(-m_aspectRatio * m_zoom, m_aspectRatio * m_zoom, -m_zoom, m_zoom);
+	}
+
 	bool OrthographicCameraConrtoller::OnMouseScrolled(MouseScrolledEvent& e)
 	{
 		m_zoom -= e.GetYOffset()* 0.25f;
 		m_zoom = std::max(m_zoom, 0.25f);
-		m_camera.SetProjection(-m_aspectRatio * m_zoom, m_aspectRatio * m_zoom, -m_zoom, m_zoom);
+		CalculateView();
 		return false;
 	}
 
 	bool OrthographicCameraConrtoller::OnWindowResized(WindowResizeEvent& e)
 	{
 		m_aspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
-		m_camera.SetProjection(-m_aspectRatio * m_zoom, m_aspectRatio * m_zoom, -m_zoom, m_zoom);
+		CalculateView();
 		return false;
 	}
 

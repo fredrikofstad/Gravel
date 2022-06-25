@@ -111,9 +111,11 @@ namespace Gravel {
 		s_data.VertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 	}
 
-	void Renderer2D::ShutDown()
+	void Renderer2D::Shutdown()
 	{
 		GR_PROFILE_FUNCTION();
+
+		delete[] s_data.BufferBase;
 	}
 
 	void Renderer2D::StartScene(const OrthographicCamera& camera)
@@ -128,7 +130,7 @@ namespace Gravel {
 	void Renderer2D::EndScene()
 	{
 		GR_PROFILE_FUNCTION();
-		uint32_t size = (uint8_t*)s_data.BufferPointer - (uint8_t*)s_data.BufferBase;
+		uint32_t size = (uint32_t)((uint8_t*)s_data.BufferPointer - (uint8_t*)s_data.BufferBase);
 		s_data.VertexBuffer->SetData(s_data.BufferBase, size);
 		Flush();
 	}
@@ -173,43 +175,9 @@ namespace Gravel {
 
 		const float textureIndex = 0.0f;
 		const float tiling = 1.0f;
+		constexpr glm::vec2 textureCoordinates[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
-		//pushing data into buffer
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-
-		s_data.BufferPointer->Position = transform * s_data.VertexPositions[0];
-		s_data.BufferPointer->Color = color;
-		s_data.BufferPointer->TextureCooridates = { 0.0f, 0.0f, };
-		s_data.BufferPointer->TextureIndex = textureIndex;
-		s_data.BufferPointer->Tiling = tiling;
-		s_data.BufferPointer++;
-			  
-		s_data.BufferPointer->Position = transform * s_data.VertexPositions[1];
-		s_data.BufferPointer->Color = color;
-		s_data.BufferPointer->TextureCooridates = { 1.0f, 0.0f, };
-		s_data.BufferPointer->TextureIndex = textureIndex;
-		s_data.BufferPointer->Tiling = tiling;
-		s_data.BufferPointer++;
-			  
-		s_data.BufferPointer->Position = transform * s_data.VertexPositions[2];
-		s_data.BufferPointer->Color = color;
-		s_data.BufferPointer->TextureCooridates = { 1.0f, 0.0f, };
-		s_data.BufferPointer->TextureIndex = textureIndex;
-		s_data.BufferPointer->Tiling = tiling;
-		s_data.BufferPointer++;
-			  
-		s_data.BufferPointer->Position = transform * s_data.VertexPositions[3];
-		s_data.BufferPointer->Color = color;
-		s_data.BufferPointer->TextureCooridates = { 0.0f, 1.0f, };
-		s_data.BufferPointer->TextureIndex = textureIndex;
-		s_data.BufferPointer->Tiling = tiling;
-		s_data.BufferPointer++;
-
-		s_data.IndexCount += 6; //incrementing 6 indices
-
-		s_data.Statistics.QuadCount++;
-
+		DrawQuadBody(position, size, 0.0f, 0.0f, tiling, color, textureCoordinates);
 
 	}
 
@@ -222,13 +190,13 @@ namespace Gravel {
 	{
 		GR_PROFILE_FUNCTION();
 
+		constexpr glm::vec2 textureCoordinates[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
+
 		if (s_data.IndexCount >= s_data.MaxIndices)
 		{
 			EndScene();
 			StartBatch();
 		}
-
-		glm::vec4 color = tintColor;
 
 		float textureIndex = 0.0f;
 
@@ -249,44 +217,50 @@ namespace Gravel {
 			s_data.TextureSlotIndex++;
 		}
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		DrawQuadBody(position, size, 0.0f, textureIndex, tiling, tintColor, textureCoordinates);
 
 
-		//pushing data into buffer
-		s_data.BufferPointer->Position = transform * s_data.VertexPositions[0];
-		s_data.BufferPointer->Color = color;
-		s_data.BufferPointer->TextureCooridates = { 0.0f, 0.0f, };
-		s_data.BufferPointer->TextureIndex = textureIndex;
-		s_data.BufferPointer->Tiling = tiling;
+	}
 
-		s_data.BufferPointer++;
+	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Shared<SubTexture>& subTexture, float tiling, const glm::vec4& tintColor)
+	{
+		DrawQuad({ position.x, position.y, 0.0f }, size, subTexture, tiling, tintColor);
+	}
 
-		s_data.BufferPointer->Position = transform * s_data.VertexPositions[1];
-		s_data.BufferPointer->Color = color;
-		s_data.BufferPointer->TextureCooridates = { 1.0f, 0.0f, };
-		s_data.BufferPointer->TextureIndex = textureIndex;
-		s_data.BufferPointer->Tiling = tiling;
-		s_data.BufferPointer++;
+	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Shared<SubTexture>& subTexture, float tiling, const glm::vec4& tintColor)
+	{
+		GR_PROFILE_FUNCTION();
 
-		s_data.BufferPointer->Position = transform * s_data.VertexPositions[2];
-		s_data.BufferPointer->Color = color;
-		s_data.BufferPointer->TextureCooridates = { 1.0f, 1.0f, };
-		s_data.BufferPointer->TextureIndex = textureIndex;
-		s_data.BufferPointer->Tiling = tiling;
-		s_data.BufferPointer++;
+		constexpr size_t vertexCount = 4;
+		const glm::vec2* textureCoordinates = subTexture->GetCoordinates();
+		const Shared<Texture2D> texture = subTexture->GetTexture();
 
-		s_data.BufferPointer->Position = transform * s_data.VertexPositions[3];
-		s_data.BufferPointer->Color = color;
-		s_data.BufferPointer->TextureCooridates = { 0.0f, 1.0f, };
-		s_data.BufferPointer->TextureIndex = textureIndex;
-		s_data.BufferPointer->Tiling = tiling;
-		s_data.BufferPointer++;
+		if (s_data.IndexCount >= s_data.MaxIndices)
+		{
+			EndScene();
+			StartBatch();
+		}
 
-		s_data.IndexCount += 6; //incrementing 6 indices
+		float textureIndex = 0.0f;
 
-		s_data.Statistics.QuadCount++;
+		for (uint32_t i = 1; i < s_data.TextureSlotIndex; i++)
+		{
+			//get pointer and then dereference it
+			if (*s_data.TextureSlots[i].get() == *texture.get())
+			{
+				textureIndex = (float)i;
+				break;
+			}
+		}
 
+		if (textureIndex == 0.0f)
+		{
+			textureIndex = (float)s_data.TextureSlotIndex;
+			s_data.TextureSlots[s_data.TextureSlotIndex] = texture;
+			s_data.TextureSlotIndex++;
+		}
+
+		DrawQuadBody(position, size, 0.0f, textureIndex, tiling, tintColor, textureCoordinates);
 
 	}
 
@@ -299,6 +273,8 @@ namespace Gravel {
 	{
 		GR_PROFILE_FUNCTION();
 
+		constexpr glm::vec2 textureCoordinates[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
+
 		if (s_data.IndexCount >= s_data.MaxIndices)
 		{
 			EndScene();
@@ -326,43 +302,49 @@ namespace Gravel {
 			s_data.TextureSlotIndex++;
 		}
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f })
-			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		DrawQuadBody(position, size, rotation, textureIndex, tiling, tintColor, textureCoordinates);
 
+	}
 
-		//pushing data into buffer
-		s_data.BufferPointer->Position = transform * s_data.VertexPositions[0];
-		s_data.BufferPointer->Color = color;
-		s_data.BufferPointer->TextureCooridates = { 0.0f, 0.0f, };
-		s_data.BufferPointer->TextureIndex = textureIndex;
-		s_data.BufferPointer->Tiling = tiling;
-		s_data.BufferPointer++;
+	void Renderer2D::DrawRotateQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Shared<SubTexture>& subTexture, float tiling, const glm::vec4& tintColor)
+	{
+		DrawRotateQuad({ position.x, position.y, 0.0f }, size, rotation, subTexture, tiling, tintColor);
+	}
 
-		s_data.BufferPointer->Position = transform * s_data.VertexPositions[1];
-		s_data.BufferPointer->Color = color;
-		s_data.BufferPointer->TextureCooridates = { 1.0f, 0.0f, };
-		s_data.BufferPointer->TextureIndex = textureIndex;
-		s_data.BufferPointer->Tiling = tiling;
-		s_data.BufferPointer++;
+	void Renderer2D::DrawRotateQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Shared<SubTexture>& subTexture, float tiling, const glm::vec4& tintColor)
+	{
+		GR_PROFILE_FUNCTION();
 
-		s_data.BufferPointer->Position = transform * s_data.VertexPositions[2];
-		s_data.BufferPointer->Color = color;
-		s_data.BufferPointer->TextureCooridates = { 1.0f, 1.0f, };
-		s_data.BufferPointer->TextureIndex = textureIndex;
-		s_data.BufferPointer->Tiling = tiling;
-		s_data.BufferPointer++;
+		constexpr size_t vertexCount = 4;
+		const glm::vec2* textureCoordinates = subTexture->GetCoordinates();
+		const Shared<Texture2D> texture = subTexture->GetTexture();
 
-		s_data.BufferPointer->Position = transform * s_data.VertexPositions[3];
-		s_data.BufferPointer->Color = color;
-		s_data.BufferPointer->TextureCooridates = { 0.0f, 1.0f, };
-		s_data.BufferPointer->TextureIndex = textureIndex;
-		s_data.BufferPointer->Tiling = tiling;
-		s_data.BufferPointer++;
+		if (s_data.IndexCount >= s_data.MaxIndices)
+		{
+			EndScene();
+			StartBatch();
+		}
 
-		s_data.IndexCount += 6; //incrementing 6 indices
+		float textureIndex = 0.0f;
 
-		s_data.Statistics.QuadCount++;
+		for (uint32_t i = 1; i < s_data.TextureSlotIndex; i++)
+		{
+			//get pointer and then dereference it
+			if (*s_data.TextureSlots[i].get() == *texture.get())
+			{
+				textureIndex = (float)i;
+				break;
+			}
+		}
+
+		if (textureIndex == 0.0f)
+		{
+			textureIndex = (float)s_data.TextureSlotIndex;
+			s_data.TextureSlots[s_data.TextureSlotIndex] = texture;
+			s_data.TextureSlotIndex++;
+		}
+
+		DrawQuadBody(position, size, rotation, textureIndex, tiling, tintColor, textureCoordinates);
 
 	}
 
@@ -374,6 +356,34 @@ namespace Gravel {
 	void Renderer2D::ResetStatistics()
 	{
 		memset(&s_data.Statistics, 0, sizeof(Renderer2D::Statistics));
+	}
+
+
+	void Renderer2D::DrawQuadBody(const glm::vec3& position, const glm::vec2& size, float rotation, float textureIndex, float tiling, const glm::vec4& tintColor, const glm::vec2 textureCoordinates[])
+	{
+		GR_PROFILE_FUNCTION();
+
+		constexpr size_t vertexCount = 4;
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f })
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
+
+		//pushing data into buffer
+		for (size_t i = 0; i < vertexCount; i++)
+		{
+			s_data.BufferPointer->Position = transform * s_data.VertexPositions[i];
+			s_data.BufferPointer->Color = tintColor;
+			s_data.BufferPointer->TextureCooridates = textureCoordinates[i];
+			s_data.BufferPointer->TextureIndex = textureIndex;
+			s_data.BufferPointer->Tiling = tiling;
+			s_data.BufferPointer++;
+		}
+
+		s_data.IndexCount += 6;
+
+		s_data.Statistics.QuadCount++;
 	}
 
 }

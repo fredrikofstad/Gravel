@@ -8,6 +8,15 @@
 
 namespace Gravel {
 
+	struct OrhographicCameraBounds
+	{
+		float Left, Right;
+		float Bottom, Top;
+
+		float GetWidth() { return Right - Left; }
+		float GetHeight() { return Top - Bottom; }
+	};
+
 	class OrthographicCameraConrtoller
 	{
 	public:
@@ -18,7 +27,14 @@ namespace Gravel {
 
 		void OnUpdate(Timestep deltaTime);
 		void OnEvent(Event& e);
+
+		float GetZoom() const { return m_zoom; }
+		void SetZoom(float level) { m_zoom = level; CalculateView(); }
+
+		const OrhographicCameraBounds& GetBounds() const { return m_bounds; }
+
 	private:
+		void CalculateView();
 		bool OnMouseScrolled(MouseScrolledEvent& e);
 		bool OnWindowResized(WindowResizeEvent& e);
 
@@ -28,13 +44,12 @@ namespace Gravel {
 		bool m_rotation;
 		
 		OrthographicCamera m_camera;
+		OrhographicCameraBounds m_bounds;
 
 		glm::vec3 m_cameraPosition = { 0.0f, 0.0f, 0.0f };
 		float m_cameraRotation = 0;
 		float m_moveSpeed = 1.0f;
 		float m_rotationSpeed = 180.0f;
-
-
 
 	};
 

@@ -14,6 +14,11 @@ namespace Gravel {
 		Renderer2D::Init();
 	}
 
+	void Renderer::Shutdown()
+	{
+		Renderer2D::Shutdown();
+	}
+
 	void Renderer::StartScene(OrthographicCamera& camera)
 	{
 		s_sceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
