@@ -32,11 +32,15 @@ void Test2D::OnAttach()
 {
 	GR_PROFILE_FUNCTION();
 
+	m_defaultTexture = Gravel::Texture2D::Create("res/textures/default.png");
 	m_texture = Gravel::Texture2D::Create("res/textures/panda.png");
 	m_kappaTexture = Gravel::Texture2D::Create("res/textures/kappa.png");
 	m_bush = Gravel::SubTexture::CreateFromCoords(m_kappaTexture, { 2, 12 }, { 16,16 });
-	m_tile = Gravel::SubTexture::CreateFromCoords(m_kappaTexture, { 0, 11 }, { 16,16 });
-	m_tree = Gravel::SubTexture::CreateFromCoords(m_kappaTexture, { 0, 14 }, { 16,16 }, {2,2});
+	//framebuffer
+	Gravel::FrameBufferSpecification frameBufferSpecs;
+	frameBufferSpecs.Width = 1280;
+	frameBufferSpecs.Height = 720;
+	m_frameBuffer = Gravel::FrameBuffer::Create(frameBufferSpecs);
 
 	//Texture atlas test
 
@@ -73,6 +77,7 @@ void Test2D::OnUpdate(Gravel::Timestep deltaTime)
 
 	{
 		GR_PROFILE_SCOPE("Renderer Prep");
+		m_frameBuffer->Bind();
 		Gravel::RenderInstruction::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Gravel::RenderInstruction::Clear();
 	}
@@ -97,14 +102,10 @@ void Test2D::OnUpdate(Gravel::Timestep deltaTime)
 		Gravel::Renderer2D::EndScene();
 #endif
 #if 1
+		static float rotation = 0.0f;
+		rotation += deltaTime * 50.0f;
+
 		Gravel::Renderer2D::StartScene(m_cameraController.GetCamera());
-		/*
-		Gravel::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_bush);
-		Gravel::Renderer2D::DrawQuad({ 1.1f, 0.0f }, { 1.0f, 1.0f }, m_tile);
-		Gravel::Renderer2D::DrawQuad({ 0.0f, 2.0f }, { 2.0f, 2.0f }, m_tree);
-		*/
-		//Gravel::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_kappaTexture);
-		
 		for (uint32_t y = 0; y < m_mapHeight; y++)
 		{
 			for (uint32_t x = 0; x < m_mapWidth; x++)
@@ -119,7 +120,17 @@ void Test2D::OnUpdate(Gravel::Timestep deltaTime)
 			}
 		}
 
+
+		Gravel::Renderer2D::DrawQuad({ -1.0f, 0.0f, 0.1f }, { 0.8f, 0.8f }, { 0.2f, 0.2f, 0.85f, 1.0f });
+		Gravel::Renderer2D::DrawQuad({ 0.5f, -0.5f, 0.1f}, { 0.5f, 0.75f }, { 0.2f, 0.8f, 0.14f, 1.0f });
+		Gravel::Renderer2D::DrawQuad({ 0.5f, 1.0f, 0.1f }, { 1.6f, 1.6f }, m_materialColor);
+		Gravel::Renderer2D::DrawQuad({ 0.5f, 1.0f, 0.2f }, { 1.0f, 1.5f }, m_texture, 1.0f, { 1.0f, 1.0f, 0.5f, 0.5f });
+		Gravel::Renderer2D::DrawQuad({ -0.5f, 1.0f, 0.1f }, { 1.0f, 1.5f }, m_texture, 1.0f, { 1.0f,0.0f,1.0f,1.0f });
+		Gravel::Renderer2D::DrawRotateQuad({ -2.0f, 0.0f, 0.1f }, { 1.0f, 1.0f }, rotation, m_texture, 10.0f);
+		Gravel::Renderer2D::DrawRotateQuad({ 2.0f, 0.0f, 0.2f }, { 1.0f, 1.5f }, -rotation, m_texture, 1.0f);
+		
 		Gravel::Renderer2D::EndScene();
+		m_frameBuffer->Unbind();
 
 #endif
 	}
@@ -131,7 +142,7 @@ void Test2D::OnImguiRender()
 	GR_PROFILE_FUNCTION();
 
 	// Note: Switch this to true to enable dockspace
-	static bool dockingEnabled = false;
+	static bool dockingEnabled = true;
 	if (dockingEnabled)
 	{
 		static bool dockspaceOpen = true;
@@ -205,28 +216,37 @@ void Test2D::OnImguiRender()
 
 		ImGui::Begin("Material");
 		ImGui::ColorEdit4("Color", glm::value_ptr(m_materialColor));
-		Gravel::RendererID textureID = m_texture->GetRendererID();
+		Gravel::RendererID textureID = m_defaultTexture->GetRendererID();
 		ImGui::Image((void*)textureID, ImVec2{ 256.0f, 256.0f });
 		ImGui::End();
-		}
-		else
-		{
-			ImGui::Begin("Settings");
 
-			auto statistics = Gravel::Renderer2D::GetStatistics();
-			ImGui::Text("Renderer2D statistics:");
-			ImGui::Text("Draw Calls: %d", statistics.DrawCalls);
-			ImGui::Text("Quad Count: %d", statistics.QuadCount);
-			ImGui::Text("Vertices: %d", statistics.GetTotalVertexCount());
-			ImGui::Text("Indices: %d", statistics.GetTotalIndexCount());
-			ImGui::End();
 
-			ImGui::Begin("Material");
-			ImGui::ColorEdit4("Color", glm::value_ptr(m_materialColor));
-			Gravel::RendererID textureID = m_texture->GetRendererID();
-			ImGui::Image((void*)textureID, ImVec2{ 256.0f, 256.0f });
-			ImGui::End();
-		}
+		ImGui::Begin("Viewport");
+		Gravel::RendererID colorID = m_frameBuffer->GetColorAttachment();
+		ImGui::Image((void*)colorID, ImVec2{ 1280.0f, 720.0f });
+		ImGui::End();
+
+		ImGui::End();
+
+	}
+	else
+	{
+		ImGui::Begin("Settings");
+
+		auto statistics = Gravel::Renderer2D::GetStatistics();
+		ImGui::Text("Renderer2D statistics:");
+		ImGui::Text("Draw Calls: %d", statistics.DrawCalls);
+		ImGui::Text("Quad Count: %d", statistics.QuadCount);
+		ImGui::Text("Vertices: %d", statistics.GetTotalVertexCount());
+		ImGui::Text("Indices: %d", statistics.GetTotalIndexCount());
+		ImGui::End();
+
+		ImGui::Begin("Material");
+		ImGui::ColorEdit4("Color", glm::value_ptr(m_materialColor));
+		Gravel::RendererID textureID = m_defaultTexture->GetRendererID();
+		ImGui::Image((void*)textureID, ImVec2{ 256.0f, 256.0f });
+		ImGui::End();
+	}
 }
 
 void Test2D::OnEvent(Gravel::Event& e)

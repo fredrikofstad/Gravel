@@ -98,7 +98,7 @@ namespace Gravel {
 		for (int32_t i = 0; i < s_data.MaxTextureSlots; i++)
 			samplers[i] = i;
 
-		s_data.Shader = Shader::Create("res/shaders/texture2D.glsl");
+		s_data.Shader = Shader::Create("res/shaders/switch.glsl");
 		s_data.Shader->Bind();
 		s_data.Shader->SetIntArray("u_textures", samplers, s_data.MaxTextureSlots);
 

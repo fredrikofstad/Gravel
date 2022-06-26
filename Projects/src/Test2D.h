@@ -13,13 +13,13 @@ public:
 	virtual void OnImguiRender() override;
 	virtual void OnEvent(Gravel::Event& e) override;
 private:
-	// To be replaced by renderer
-	Gravel::Shared<Gravel::VertexArray> m_vertexArray;
-	//Gravel::Shared<Gravel::Shader> m_shader;
 
+	Gravel::Shared<Gravel::Texture2D> m_defaultTexture;
 	Gravel::Shared<Gravel::Texture2D> m_texture;
 	Gravel::Shared<Gravel::Texture2D> m_kappaTexture;
-	Gravel::Shared<Gravel::SubTexture> m_bush, m_tile, m_tree;
+	Gravel::Shared<Gravel::SubTexture> m_bush;
+
+	Gravel::Shared<Gravel::FrameBuffer> m_frameBuffer;
 
 	glm::vec4 m_materialColor = { 0.3, 0.6, 0.34, 1.0f };
 
