@@ -1,6 +1,6 @@
 workspace "Gravel"
 	architecture "x64"
-	startproject "Projects"
+	startproject "Garden"
 
 	configurations
 	{
@@ -101,8 +101,63 @@ project "Gravel"
 		runtime "Release"
 		optimize "on"
 
-project "Projects"
-	location "Projects"
+project "Tests"
+	location "Tests"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "c++17"
+	staticruntime "on"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files
+	{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp",
+	}
+
+	includedirs
+	{
+		"Gravel/thirdparty/spdlog/include",
+		"Gravel/src",
+		"Gravel/thirdparty/",
+		"%{IncludeDir.glm}",
+	}
+
+	links
+	{
+		"Gravel"
+	}
+
+	filter "system:windows"
+		systemversion "latest"
+
+		defines
+		{
+			"GR_PLATFORM_WINDOWS"
+		}
+
+
+	filter "configurations:Debug"
+		defines "GR_DEBUG"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		defines "GR_RELEASE"
+		runtime "Release"
+		optimize "on"
+
+	filter "configurations:Distribution"
+		defines "GR_DIST"
+		runtime "Release"
+		optimize "on"
+
+
+
+project "Garden"
+	location "Garden"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "c++17"

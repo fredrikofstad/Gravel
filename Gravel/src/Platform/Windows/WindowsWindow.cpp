@@ -17,11 +17,6 @@ namespace Gravel {
 		GR_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
 	}
 
-	Window* Window::Create(const WindowProperties& properties)
-	{
-		return new WindowsWindow(properties);
-	}
-
 	WindowsWindow::WindowsWindow(const WindowProperties& properties)
 	{
 		GR_PROFILE_FUNCTION();

@@ -18,7 +18,7 @@ namespace Gravel {
 	class Application
 	{
 	public:
-		Application();
+		Application(const std::string& name = "Gravel Application");
 		virtual ~Application();
 
 		void OnEvent(Event& event);

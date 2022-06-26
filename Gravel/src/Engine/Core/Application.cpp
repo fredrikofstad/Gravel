@@ -14,7 +14,7 @@ namespace Gravel {
 	Application* Application::s_instance = nullptr;
 
 
-	Application::Application()
+	Application::Application(const std::string& name)
 	{
 		GR_PROFILE_FUNCTION();
 
@@ -22,7 +22,7 @@ namespace Gravel {
 		GR_CORE_ASSERT(!s_instance, "Instance of application already exits.")
 		s_instance = this;
 
-		m_window = Unique<Window>(Window::Create());
+		m_window = Unique<Window>(Window::Create(WindowProperties(name)));
 		m_window->SetEventCallback(GR_BIND_EVENT(Application::OnEvent));
 
 		Renderer::Init();
