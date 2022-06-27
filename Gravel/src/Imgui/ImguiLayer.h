@@ -16,15 +16,18 @@ namespace Gravel {
 		ImguiLayer();
 		~ImguiLayer();
 
-		void OnAttach() override;
-		void OnDetach() override;
+		virtual void OnAttach() override;
+		virtual void OnDetach() override;
+		virtual void OnEvent(Event& e) override;
 
 		void Start();
 		void End();
 
+		void BlockEvents(bool block) { m_blockEvents = block; }
 
 	private:
 		float m_time;
+		bool m_blockEvents = true;
 	};
 
 }

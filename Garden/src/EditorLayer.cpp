@@ -27,7 +27,7 @@ namespace Gravel {
 
 
 	EditorLayer::EditorLayer()
-		:Layer("Test 2D"), m_cameraController(1280.0f / 720.0f, true)
+		:Layer("Test 2D"), m_cameraController(1280.0f / 720.0f, false)
 	{
 	}
 
@@ -35,8 +35,9 @@ namespace Gravel {
 	{
 		GR_PROFILE_FUNCTION();
 
+		m_iconTexture = Texture2D::Create("res/textures/icon.png");
+
 		m_defaultTexture = Texture2D::Create("res/textures/default.png");
-		m_texture = Texture2D::Create("res/textures/panda.png");
 		m_kappaTexture = Texture2D::Create("res/textures/kappa.png");
 		m_bush =  SubTexture::CreateFromCoords(m_kappaTexture, { 2, 12 }, { 16,16 });
 		//framebuffer
@@ -71,72 +72,43 @@ namespace Gravel {
 	{
 		GR_PROFILE_FUNCTION();
 
-		{
-			GR_PROFILE_SCOPE("CameraController::OnUpdate");
+
+		if (m_viewportFocused)
 			m_cameraController.OnUpdate(deltaTime);
-		}
 
 		Renderer2D::ResetStatistics();
 
+		m_frameBuffer->Bind();
+		RenderInstruction::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+		RenderInstruction::Clear();
+
+
+		// manipulating values
+		m_timeToNextFrame -= deltaTime;
+		GR_CORE_TRACE("time: {0}", m_timeToNextFrame);
+		if (m_timeToNextFrame < 0)
 		{
-			GR_PROFILE_SCOPE("Renderer Prep");
-			m_frameBuffer->Bind();
-			RenderInstruction::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
-			RenderInstruction::Clear();
+			m_timeToNextFrame = m_timeToWait;
+			s_textureMap['w']->NextFrame(4);
 		}
 
+		Renderer2D::StartScene(m_cameraController.GetCamera());
+		for (uint32_t y = 0; y < m_mapHeight; y++)
 		{
-			GR_PROFILE_SCOPE("Renderer Draw");
-
-#if 0
-			static float rotation = 0.0f;
-			rotation += deltaTime * 50.0f;
-
-			Renderer2D::StartScene(m_cameraController.GetCamera());
-
-			Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.2f, 0.2f, 0.85f, 1.0f });
-			Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, { 0.2f, 0.8f, 0.14f, 1.0f });
-			Renderer2D::DrawQuad({ 0.5f, 1.0f, 0.0f }, { 1.6f, 1.6f }, m_materialColor);
-			Renderer2D::DrawQuad({ 0.5f, 1.0f, 0.1f }, { 1.0f, 1.5f }, m_texture, 1.0f, { 1.0f, 1.0f, 0.5f, 0.5f });
-			Renderer2D::DrawQuad({ -0.5f, 1.0f }, { 1.0f, 1.5f }, m_texture, 1.0f, { 1.0f,0.0f,1.0f,1.0f });
-			Renderer2D::DrawRotateQuad({ -2.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, rotation, m_texture, 10.0f);
-			Renderer2D::DrawRotateQuad({ 2.0f, 0.0f, 0.1f }, { 1.0f, 1.5f }, -rotation, m_texture, 1.0f);
-
-			Renderer2D::EndScene();
-#endif
-#if 1
-			static float rotation = 0.0f;
-			rotation += deltaTime * 50.0f;
-
-			Renderer2D::StartScene(m_cameraController.GetCamera());
-			for (uint32_t y = 0; y < m_mapHeight; y++)
+			for (uint32_t x = 0; x < m_mapWidth; x++)
 			{
-				for (uint32_t x = 0; x < m_mapWidth; x++)
-				{
-					char tileType = s_map[x + y * m_mapWidth];
-					Shared<SubTexture> texture;
-					if (s_textureMap.find(tileType) != s_textureMap.end())
-						texture = s_textureMap[tileType];
-					else
-						texture = m_bush;
-					Renderer2D::DrawQuad({ x - m_mapWidth / 2.0f , m_mapWidth - y - m_mapWidth / 2.0f, 0.0f }, { 1.0f, 1.0f }, texture);
-				}
+				char tileType = s_map[x + y * m_mapWidth];
+				Shared<SubTexture> texture;
+				if (s_textureMap.find(tileType) != s_textureMap.end())
+					texture = s_textureMap[tileType];
+				else
+					texture = m_bush;
+				Renderer2D::DrawQuad({ x - m_mapWidth / 2.0f, m_mapWidth - y - m_mapWidth / 2.0f - 6.0f, 0.0f }, { 1.0f, 1.0f }, texture);
 			}
-
-
-			Renderer2D::DrawQuad({ -1.0f, 0.0f, 0.1f }, { 0.8f, 0.8f }, { 0.2f, 0.2f, 0.85f, 1.0f });
-			Renderer2D::DrawQuad({ 0.5f, -0.5f, 0.1f }, { 0.5f, 0.75f }, { 0.2f, 0.8f, 0.14f, 1.0f });
-			Renderer2D::DrawQuad({ 0.5f, 1.0f, 0.1f }, { 1.6f, 1.6f }, m_materialColor);
-			Renderer2D::DrawQuad({ 0.5f, 1.0f, 0.2f }, { 1.0f, 1.5f }, m_texture, 1.0f, { 1.0f, 1.0f, 0.5f, 0.5f });
-			Renderer2D::DrawQuad({ -0.5f, 1.0f, 0.1f }, { 1.0f, 1.5f }, m_texture, 1.0f, { 1.0f,0.0f,1.0f,1.0f });
-			Renderer2D::DrawRotateQuad({ -2.0f, 0.0f, 0.1f }, { 1.0f, 1.0f }, rotation, m_texture, 10.0f);
-			Renderer2D::DrawRotateQuad({ 2.0f, 0.0f, 0.2f }, { 1.0f, 1.5f }, -rotation, m_texture, 1.0f);
-
-			Renderer2D::EndScene();
-			m_frameBuffer->Unbind();
-
-#endif
 		}
+
+		Renderer2D::EndScene();
+		m_frameBuffer->Unbind();
 
 	}
 
@@ -189,8 +161,12 @@ namespace Gravel {
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 		}
 
+
 		if (ImGui::BeginMenuBar())
 		{
+			RendererID iconID = m_iconTexture->GetRendererID();
+			ImGui::Image((void*)iconID, ImVec2{ 20.0f, 20.0f }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
 			if (ImGui::BeginMenu("File"))
 			{
 				// Disabling fullscreen would allow the window to be moved to the front of other windows, 
@@ -201,8 +177,37 @@ namespace Gravel {
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("Edit"))
+			{
+				if (ImGui::MenuItem("Exit")) Application::Get().Close();
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenuBar();
 		}
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+		ImGui::Begin("Viewport");
+
+		m_viewportFocused = ImGui::IsWindowFocused();
+		m_viewportHovered = ImGui::IsWindowHovered();
+		Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportFocused || !m_viewportHovered);
+
+		ImVec2 availableSize = ImGui::GetContentRegionAvail();
+
+		if (m_viewportSize != *((glm::vec2*)&availableSize))
+		{
+			m_frameBuffer->Resize((uint32_t)availableSize.x, (uint32_t)availableSize.y);
+			m_viewportSize = { availableSize.x, availableSize.y };
+
+			m_cameraController.OnResize(availableSize.x, availableSize.y);
+		}
+		RendererID colorID = m_frameBuffer->GetColorAttachment();
+		ImGui::Image((void*)colorID, ImVec2{ (float)m_viewportSize.x, (float)m_viewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 }); //imvec to flip frame
+		ImGui::PopStyleVar();
+		ImGui::End();
+
+
 
 		ImGui::Begin("Settings");
 
@@ -216,18 +221,11 @@ namespace Gravel {
 
 		ImGui::Begin("Material");
 		ImGui::ColorEdit4("Color", glm::value_ptr(m_materialColor));
-		RendererID textureID = m_defaultTexture->GetRendererID();
-		ImGui::Image((void*)textureID, ImVec2{ 256.0f, 256.0f });
+		ImGui::DragFloat("Animation Rate", &m_timeToWait, 0.005f, 0.0f, 2.0f);
 		ImGui::End();
 
 
-		ImGui::Begin("Viewport");
-		RendererID colorID = m_frameBuffer->GetColorAttachment();
-		ImGui::Image((void*)colorID, ImVec2{ 1280.0f, 720.0f }, ImVec2{0, 1}, ImVec2{ 1, 0 }); //imvec to flip frame
 		ImGui::End();
-
-		ImGui::End();
-
 
 	}
 

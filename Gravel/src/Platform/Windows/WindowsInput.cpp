@@ -1,14 +1,12 @@
 #include "grpch.h"
-#include "WindowsInput.h"
+#include "Engine/Core/Input.h"
 
 #include <GLFW/glfw3.h>
 #include "Engine/Core/Application.h"
 
 namespace Gravel {
 
-	Unique<Input> Input::s_instance = MakeUnique<WindowsInput>();
-
-	bool WindowsInput::isKeyPressedImp(int keycode)
+	bool Input::isKeyPressed(int keycode)
 	{
 
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
@@ -17,14 +15,14 @@ namespace Gravel {
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
-	bool WindowsInput::isMouseButtonPressedImp(int button)
+	bool Input::isMouseButtonPressed(int button)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		auto state = glfwGetMouseButton(window, button);
 		return state == GLFW_PRESS;
 	}
 
-	std::pair<float, float> WindowsInput::GetMousePositionImp()
+	std::pair<float, float> Input::GetMousePosition()
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		double xpos, ypos;
@@ -32,15 +30,15 @@ namespace Gravel {
 		return { (float)xpos, (float)ypos };
 	}
 
-	float WindowsInput::GetMouseXImp()
+	float Input::GetMouseX()
 	{
-		auto[x,y] = GetMousePositionImp();
+		auto[x,y] = GetMousePosition();
 		return x;
 	}
 
-	float WindowsInput::GetMouseYImp()
+	float Input::GetMouseY()
 	{
-		auto [x, y] = GetMousePositionImp();
+		auto [x, y] = GetMousePosition();
 		return y;
 	}
 

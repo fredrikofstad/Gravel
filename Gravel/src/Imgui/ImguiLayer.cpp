@@ -60,6 +60,16 @@ namespace Gravel {
 		ImGui::DestroyContext();
 	}
 
+	void ImguiLayer::OnEvent(Event& e)
+	{
+		if (m_blockEvents)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+			e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+		}
+	}
+
 	void ImguiLayer::Start()
 	{
 		ImGui_ImplOpenGL3_NewFrame();

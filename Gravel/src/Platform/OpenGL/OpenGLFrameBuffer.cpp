@@ -8,16 +8,25 @@ namespace Gravel {
 	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& specification)
 		: m_specification(specification)
 	{
-		Resize();
+		Recalculate();
 	}
 
 	OpenGLFrameBuffer::~OpenGLFrameBuffer()
 	{
 		glDeleteFramebuffers(1, &m_rendererID);
+		glDeleteTextures(1, &m_colorAttachment);
+		glDeleteTextures(1, &m_depthAttachment);
 	}
 
-	void OpenGLFrameBuffer::Resize()
+	void OpenGLFrameBuffer::Recalculate()
 	{
+		if (m_rendererID)
+		{
+			glDeleteFramebuffers(1, &m_rendererID);
+			glDeleteTextures(1, &m_colorAttachment);
+			glDeleteTextures(1, &m_depthAttachment);
+		}
+
 		glCreateFramebuffers(1, &m_rendererID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_rendererID);
 		
@@ -50,11 +59,20 @@ namespace Gravel {
 	void OpenGLFrameBuffer::Bind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_rendererID);
+		glViewport(0, 0, m_specification.Width, m_specification.Height);
 	}
 
 	void OpenGLFrameBuffer::Unbind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
+	{
+		m_specification.Width = width;
+		m_specification.Height = height;
+
+		Recalculate();
 	}
 
 }

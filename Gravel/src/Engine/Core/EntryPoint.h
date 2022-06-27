@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 	app->Run();
 	GR_PROFILE_END_SESSION();
 
-	GR_PROFILE_BEGIN_SESSION("Startup", "log/Profile-Shutdown.json");
+	GR_PROFILE_BEGIN_SESSION("Shutdown", "log/Profile-Shutdown.json");
 	delete app;
 	GR_PROFILE_END_SESSION();
 }

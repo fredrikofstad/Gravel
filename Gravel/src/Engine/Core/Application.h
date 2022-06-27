@@ -28,6 +28,7 @@ namespace Gravel {
 
 		inline Window& GetWindow() { return *m_window; }
 
+		ImguiLayer* GetImGuiLayer() { return m_imguiLayer; }
 		void Close();
 		void Run();
 
