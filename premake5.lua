@@ -14,6 +14,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLWF"] = "Gravel/thirdparty/GLFW/include"
 IncludeDir["Glad"] = "Gravel/thirdparty/Glad/include"
+IncludeDir["entt"] = "Gravel/thirdparty/entt/include"
 IncludeDir["Imgui"] = "Gravel/thirdparty/imgui"
 IncludeDir["glm"] = "Gravel/thirdparty/glm/"
 IncludeDir["stb"] = "Gravel/thirdparty/stb/"
@@ -56,13 +57,15 @@ project "Gravel"
 
 	includedirs
 	{
-		"%{prj.name}/thirdparty/spdlog/include",
 		"%{prj.name}/src",
+		"%{prj.name}/thirdparty/spdlog/include",
 		"%{prj.name}/thirdparty/GLFW/include",
 		"%{prj.name}/thirdparty/Glad/include",
+		"%{prj.name}/thirdparty/entt/include",
 		"%{prj.name}/thirdparty/imgui",
 		"%{prj.name}/thirdparty/glm",
 		"%{prj.name}/thirdparty/stb",
+
 
 
 		--"%{IncludeDir.GLFW}"
@@ -123,6 +126,8 @@ project "Tests"
 		"Gravel/src",
 		"Gravel/thirdparty/",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}",
+
 	}
 
 	links
@@ -178,6 +183,8 @@ project "Garden"
 		"Gravel/src",
 		"Gravel/thirdparty/",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}",
+
 	}
 
 	links

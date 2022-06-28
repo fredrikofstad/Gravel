@@ -5,6 +5,8 @@
 
 namespace Gravel {
 
+	static const uint32_t s_maxFramebufferSize = 8192;
+
 	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& specification)
 		: m_specification(specification)
 	{
@@ -69,6 +71,13 @@ namespace Gravel {
 
 	void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 	{
+
+		if (width == 0 || height == 0 || width > s_maxFramebufferSize || height > s_maxFramebufferSize)
+		{
+			GR_CORE_WARN("Attempted to rezize framebuffer to {0}, {1}", width, height);
+			return;
+		}
+
 		m_specification.Width = width;
 		m_specification.Height = height;
 
