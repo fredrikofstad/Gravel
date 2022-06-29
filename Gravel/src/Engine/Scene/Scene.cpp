@@ -2,6 +2,7 @@
 #include "Scene.h"
 
 #include "Components.h"
+#include "Entity.h"
 #include "Engine/Renderer/Renderer2D.h"
 #include <glm/glm.hpp>
 
@@ -48,19 +49,23 @@ namespace Gravel {
 	{
 	}
 
-	entt::entity Scene::CreateEntity()
+	Entity Scene::CreateEntity(const std::string& name)
 	{
-		return m_registry.create();
+		Entity entity = { m_registry.create(), this };
+		entity.AddComponent<TransformComponent>();
+		auto& tag = entity.AddComponent<TagComponent>();
+		tag.Tag = name.empty() ? "Entity" : name;
+		return entity;
 	}
 
-	void Scene::OnUpdate(Timestep ts)
+	void Scene::OnUpdate(Timestep deltaTimeS)
 	{
 		auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 		for (auto entity : group)
 		{
 			auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
-			//Renderer2D::DrawQuad(transform, sprite.Color);
+			Renderer2D::DrawQuad(transform, sprite.Color);
 		}
 
 

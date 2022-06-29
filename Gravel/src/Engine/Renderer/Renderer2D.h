@@ -26,6 +26,11 @@ namespace Gravel {
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const Shared<SubTexture>& subTexture, float tiling = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const Shared<SubTexture>& subTexture, float tiling = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
 
+
+		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color = glm::vec4(1.0f));
+		static void DrawQuad(const glm::mat4& transform, const Shared<Texture2D>& texture, float tiling = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
+
+
 		
 		static void DrawRotateQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Shared<Texture2D>& texture, float tiling = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
 		static void DrawRotateQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Shared<Texture2D>& texture, float tiling = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
@@ -50,7 +55,7 @@ namespace Gravel {
 	private: 
 		static void StartBatch();
 
-		static void DrawQuadBody(const glm::vec3& position, const glm::vec2& size, float rotation, float textureIndex, float tiling, const glm::vec4& tintColor, const glm::vec2 textureCoordinates[]);
+		static void DrawQuadBody(const glm::mat4 transform, float textureIndex, float tiling, const glm::vec4& tintColor, const glm::vec2 textureCoordinates[]);
 	};
 
 

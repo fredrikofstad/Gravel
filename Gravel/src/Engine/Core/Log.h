@@ -11,22 +11,17 @@
 
 namespace Gravel {
 
-	class GRAVEL_API Log
+	class Log
 	{
 	public:
 		static void Init();
 
-		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger()
-		{
-			return s_coreLogger;
-		}
-		inline static std::shared_ptr<spdlog::logger>& GetClientLogger()
-		{
-			return s_clientLogger;
-		}
+		static Shared<spdlog::logger>& GetCoreLogger() { return s_coreLogger; }
+		static Shared<spdlog::logger>& GetClientLogger() { return s_clientLogger; }
+
 	private:
-		static std::shared_ptr<spdlog::logger> s_coreLogger;
-		static std::shared_ptr<spdlog::logger> s_clientLogger;
+		static Shared<spdlog::logger> s_coreLogger;
+		static Shared<spdlog::logger> s_clientLogger;
 	};
 }
 //core log macros

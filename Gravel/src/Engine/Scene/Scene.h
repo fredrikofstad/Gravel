@@ -1,10 +1,11 @@
 #pragma once
 
 #include "entt.hpp"
-
 #include "Engine/Core/Timestep.h"
 
 namespace Gravel {
+
+	class Entity;
 
 	class Scene
 	{
@@ -12,13 +13,14 @@ namespace Gravel {
 		Scene();
 		~Scene();
 
-		entt::entity CreateEntity();
+		Entity CreateEntity(const std::string& name = std::string());
 
-		entt::registry& Reg() { return m_registry; }
+		entt::registry& GetRegistry() { return m_registry; }
 
-		void OnUpdate(Timestep ts);
+		void OnUpdate(Timestep deltaTime);
 	private:
 		entt::registry m_registry;
+		friend class Entity;
 	};
 
 }

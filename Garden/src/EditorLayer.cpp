@@ -6,6 +6,8 @@
 
 namespace Gravel {
 
+
+	/*
 	static const uint32_t s_mapWidth = 24;
 	static const char* s_map =
 		"wwwwwwwwwwwwwwwwwwwwwwww"
@@ -24,6 +26,8 @@ namespace Gravel {
 		"wwwwwwwwwwwwwwwwwwwwwwww"
 		;
 
+	*/
+
 
 
 	EditorLayer::EditorLayer()
@@ -38,13 +42,19 @@ namespace Gravel {
 		m_iconTexture = Texture2D::Create("res/textures/icon.png");
 
 		m_defaultTexture = Texture2D::Create("res/textures/default.png");
-		m_kappaTexture = Texture2D::Create("res/textures/kappa.png");
-		m_bush =  SubTexture::CreateFromCoords(m_kappaTexture, { 2, 12 }, { 16,16 });
+		//m_kappaTexture = Texture2D::Create("res/textures/kappa.png");
+		//m_bush =  SubTexture::CreateFromCoords(m_kappaTexture, { 2, 12 }, { 16,16 });
 		//framebuffer
 		FrameBufferSpecification frameBufferSpecs;
 		frameBufferSpecs.Width = 1280;
 		frameBufferSpecs.Height = 720;
 		m_frameBuffer = FrameBuffer::Create(frameBufferSpecs);
+
+		m_scene = MakeShared<Scene>();
+		m_panda = m_scene->CreateEntity("Panda");
+		m_panda.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 0.8f, 0.0f, 1.0f });
+
+		/*
 
 		//Texture atlas test
 
@@ -59,6 +69,8 @@ namespace Gravel {
 		s_textureMap['g'] = SubTexture::CreateFromCoords(m_kappaTexture, { 4, 14 }, { 16,16 });
 
 
+		*/
+
 		m_cameraController.SetZoom(5.0f);
 
 	}
@@ -72,7 +84,7 @@ namespace Gravel {
 	{
 		GR_PROFILE_FUNCTION();
 
-
+		// Setup
 		if (m_viewportFocused)
 			m_cameraController.OnUpdate(deltaTime);
 
@@ -82,16 +94,23 @@ namespace Gravel {
 		RenderInstruction::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		RenderInstruction::Clear();
 
+		Renderer2D::StartScene(m_cameraController.GetCamera());
+
+		/*
 
 		// manipulating values
 		m_timeToNextFrame -= deltaTime;
-		GR_CORE_TRACE("time: {0}", m_timeToNextFrame);
 		if (m_timeToNextFrame < 0)
 		{
 			m_timeToNextFrame = m_timeToWait;
 			s_textureMap['w']->NextFrame(4);
 		}
 
+		//Rendering
+
+
+		// tilemap
+		
 		Renderer2D::StartScene(m_cameraController.GetCamera());
 		for (uint32_t y = 0; y < m_mapHeight; y++)
 		{
@@ -106,6 +125,10 @@ namespace Gravel {
 				Renderer2D::DrawQuad({ x - m_mapWidth / 2.0f, m_mapWidth - y - m_mapWidth / 2.0f - 6.0f, 0.0f }, { 1.0f, 1.0f }, texture);
 			}
 		}
+		*/
+
+		// scene
+		m_scene->OnUpdate(deltaTime);
 
 		Renderer2D::EndScene();
 		m_frameBuffer->Unbind();
@@ -147,7 +170,7 @@ namespace Gravel {
 		// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise 
 		// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
+		ImGui::Begin("Gravel", &dockspaceOpen, window_flags);
 		ImGui::PopStyleVar();
 
 		if (opt_fullscreen)
@@ -220,7 +243,17 @@ namespace Gravel {
 		ImGui::End();
 
 		ImGui::Begin("Material");
-		ImGui::ColorEdit4("Color", glm::value_ptr(m_materialColor));
+
+		if (m_panda)
+		{
+			ImGui::Separator();
+			auto& tag = m_panda.GetComponent<TagComponent>().Tag;
+			ImGui::Text("%s", tag.c_str());
+
+			auto& pandaColor = m_panda.GetComponent<SpriteRendererComponent>().Color;
+			ImGui::ColorEdit4("Color", glm::value_ptr(pandaColor));
+			ImGui::Separator();
+		}
 		ImGui::DragFloat("Animation Rate", &m_timeToWait, 0.005f, 0.0f, 2.0f);
 		ImGui::End();
 

@@ -56,7 +56,7 @@ namespace Gravel {
 				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 		#endif
 
-
+		//glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 		m_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, m_data.Title.c_str(), nullptr, nullptr);
 		
 		m_context = MakeUnique<OpenGLContext>(m_window);

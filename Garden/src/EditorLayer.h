@@ -23,6 +23,11 @@ namespace Gravel {
 		Shared<Texture2D> m_kappaTexture;
 		Shared<SubTexture> m_bush;
 
+		Shared<Scene> m_scene;
+		Entity m_panda;
+
+
+
 		float m_timeToWait = 0.25f;
 		float m_timeToNextFrame = m_timeToWait;
 
