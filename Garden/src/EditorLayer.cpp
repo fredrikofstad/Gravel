@@ -7,32 +7,11 @@
 namespace Gravel {
 
 
-	/*
-	static const uint32_t s_mapWidth = 24;
-	static const char* s_map =
-		"wwwwwwwwwwwwwwwwwwwwwwww"
-		"wwwwwwdddddddddddddwwwww"
-		"wwwwdddgggggggggdddddwww"
-		"wwwwdgggggggggggggggddww"
-		"wwwdggggggggggggggggddww"
-		"wwwdddggggggggggggggddww"
-		"wwddddgggggggggggggggdww"
-		"wwwdddddgggggggggdddddww"
-		"wwwwwdddddddddddddddwwww"
-		"wwwwwwwwwwwwwwwwwwwwwwww"
-		"wwwwwwwwwwwwwwwwwwwwwwww"
-		"wwwwwwccwwwwwwwwwwwwwwww"
-		"wwwwwwwwwwwwwwwwwwwwwwww"
-		"wwwwwwwwwwwwwwwwwwwwwwww"
-		;
-
-	*/
-
-
 
 	EditorLayer::EditorLayer()
 		:Layer("Test 2D"), m_cameraController(1280.0f / 720.0f, false)
 	{
+
 	}
 
 	void EditorLayer::OnAttach()
@@ -40,11 +19,8 @@ namespace Gravel {
 		GR_PROFILE_FUNCTION();
 
 		m_iconTexture = Texture2D::Create("res/textures/icon.png");
-
 		m_defaultTexture = Texture2D::Create("res/textures/default.png");
-		//m_kappaTexture = Texture2D::Create("res/textures/kappa.png");
-		//m_bush =  SubTexture::CreateFromCoords(m_kappaTexture, { 2, 12 }, { 16,16 });
-		//framebuffer
+
 		FrameBufferSpecification frameBufferSpecs;
 		frameBufferSpecs.Width = 1280;
 		frameBufferSpecs.Height = 720;
@@ -54,24 +30,13 @@ namespace Gravel {
 		m_panda = m_scene->CreateEntity("Panda");
 		m_panda.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 0.8f, 0.0f, 1.0f });
 
-		/*
+		m_cameraEntity = m_scene->CreateEntity("Camera Entity");
+		m_cameraEntity.AddComponent<CameraComponent>();
 
-		//Texture atlas test
+		m_secondCamera = m_scene->CreateEntity("Clip-Space Entity");
+		auto& cc = m_secondCamera.AddComponent<CameraComponent>();
+		cc.Primary = false;
 
-		m_mapWidth = s_mapWidth;
-		m_mapHeight = strlen(s_map) / s_mapWidth;
-
-		// water 3, 9
-		s_textureMap['w'] = SubTexture::CreateFromCoords(m_kappaTexture, { 3, 9 }, { 16,16 });
-		// dirt 2, 11
-		s_textureMap['d'] = SubTexture::CreateFromCoords(m_kappaTexture, { 2, 11 }, { 16,16 });
-		//grass 4, 14
-		s_textureMap['g'] = SubTexture::CreateFromCoords(m_kappaTexture, { 4, 14 }, { 16,16 });
-
-
-		*/
-
-		m_cameraController.SetZoom(5.0f);
 
 	}
 
@@ -84,6 +49,16 @@ namespace Gravel {
 	{
 		GR_PROFILE_FUNCTION();
 
+		if (FrameBufferSpecification specification = m_frameBuffer->GetSpecification();
+			m_viewportSize.x > 0.0f && m_viewportSize.y > 0.0f && 
+			(specification.Width != m_viewportSize.x || specification.Height != m_viewportSize.y))
+		{
+			m_frameBuffer->Resize((uint32_t)m_viewportSize.x, (uint32_t)m_viewportSize.y);
+			m_cameraController.OnResize(m_viewportSize.x, m_viewportSize.y);
+
+			m_scene->OnViewportResize((uint32_t)m_viewportSize.x, (uint32_t)m_viewportSize.y);
+		}
+
 		// Setup
 		if (m_viewportFocused)
 			m_cameraController.OnUpdate(deltaTime);
@@ -94,43 +69,9 @@ namespace Gravel {
 		RenderInstruction::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		RenderInstruction::Clear();
 
-		Renderer2D::StartScene(m_cameraController.GetCamera());
-
-		/*
-
-		// manipulating values
-		m_timeToNextFrame -= deltaTime;
-		if (m_timeToNextFrame < 0)
-		{
-			m_timeToNextFrame = m_timeToWait;
-			s_textureMap['w']->NextFrame(4);
-		}
-
-		//Rendering
-
-
-		// tilemap
-		
-		Renderer2D::StartScene(m_cameraController.GetCamera());
-		for (uint32_t y = 0; y < m_mapHeight; y++)
-		{
-			for (uint32_t x = 0; x < m_mapWidth; x++)
-			{
-				char tileType = s_map[x + y * m_mapWidth];
-				Shared<SubTexture> texture;
-				if (s_textureMap.find(tileType) != s_textureMap.end())
-					texture = s_textureMap[tileType];
-				else
-					texture = m_bush;
-				Renderer2D::DrawQuad({ x - m_mapWidth / 2.0f, m_mapWidth - y - m_mapWidth / 2.0f - 6.0f, 0.0f }, { 1.0f, 1.0f }, texture);
-			}
-		}
-		*/
 
 		// scene
 		m_scene->OnUpdate(deltaTime);
-
-		Renderer2D::EndScene();
 		m_frameBuffer->Unbind();
 
 	}
@@ -217,14 +158,8 @@ namespace Gravel {
 		Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportFocused || !m_viewportHovered);
 
 		ImVec2 availableSize = ImGui::GetContentRegionAvail();
+		m_viewportSize = { availableSize.x, availableSize.y };
 
-		if (m_viewportSize != *((glm::vec2*)&availableSize))
-		{
-			m_frameBuffer->Resize((uint32_t)availableSize.x, (uint32_t)availableSize.y);
-			m_viewportSize = { availableSize.x, availableSize.y };
-
-			m_cameraController.OnResize(availableSize.x, availableSize.y);
-		}
 		RendererID colorID = m_frameBuffer->GetColorAttachment();
 		ImGui::Image((void*)colorID, ImVec2{ (float)m_viewportSize.x, (float)m_viewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 }); //imvec to flip frame
 		ImGui::PopStyleVar();
@@ -254,7 +189,23 @@ namespace Gravel {
 			ImGui::ColorEdit4("Color", glm::value_ptr(pandaColor));
 			ImGui::Separator();
 		}
-		ImGui::DragFloat("Animation Rate", &m_timeToWait, 0.005f, 0.0f, 2.0f);
+
+		ImGui::DragFloat3("Camera Transform",
+			glm::value_ptr(m_cameraEntity.GetComponent<TransformComponent>().Transform[3]));
+
+		if (ImGui::Checkbox("Camera A", &m_primaryCamera))
+		{
+			m_cameraEntity.GetComponent<CameraComponent>().Primary = m_primaryCamera;
+			m_secondCamera.GetComponent<CameraComponent>().Primary = !m_primaryCamera;
+		}
+
+		{
+			auto& camera = m_secondCamera.GetComponent<CameraComponent>().Camera;
+			float orthoSize = camera.GetOrthographicSize();
+			if (ImGui::DragFloat("Second Camera Ortho Size", &orthoSize))
+				camera.SetOrthographicSize(orthoSize);
+		}
+
 		ImGui::End();
 
 

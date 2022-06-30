@@ -127,6 +127,21 @@ namespace Gravel {
 		StartBatch();
 	}
 
+	void Renderer2D::StartScene(const Camera& camera, const glm::mat4& transform)
+	{
+		GR_PROFILE_FUNCTION();
+
+		glm::mat4 viewProjection = camera.GetProjection() * glm::inverse(transform);
+
+		s_data.Shader->Bind();
+		s_data.Shader->SetMat4("u_viewProjection", viewProjection);
+
+		s_data.IndexCount = 0;
+		s_data.BufferPointer = s_data.BufferBase;
+
+		s_data.TextureSlotIndex = 1;
+	}
+
 	void Renderer2D::EndScene()
 	{
 		GR_PROFILE_FUNCTION();

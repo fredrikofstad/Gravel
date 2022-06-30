@@ -60,14 +60,56 @@ namespace Gravel {
 
 	void Scene::OnUpdate(Timestep deltaTimeS)
 	{
-		auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-		for (auto entity : group)
-		{
-			auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+		Camera* mainCamera = nullptr;
+		glm::mat4* cameraTransform = nullptr;
 
-			Renderer2D::DrawQuad(transform, sprite.Color);
+		auto view = m_registry.view<TransformComponent, CameraComponent>();
+		for (auto entity : view)
+		{
+			auto& [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+
+			if (camera.Primary)
+			{
+				mainCamera = &camera.Camera;
+				cameraTransform = &transform.Transform;
+				break;
+			}
 		}
 
+		if (mainCamera)
+		{
+			Renderer2D::StartScene(mainCamera->GetProjection(), *cameraTransform);
+
+			auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+			for (auto entity : group)
+			{
+				auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+
+				Renderer2D::DrawQuad(transform, sprite.Color);
+			}
+
+			Renderer2D::EndScene();
+		}
+
+
+
+
+
+	}
+
+	void Scene::OnViewportResize(uint32_t width, uint32_t height)
+	{
+		m_viewportWidth = width;
+		m_viewportHeight = height;
+
+		// Resize our non-FixedAspectRatio cameras
+		auto view = m_registry.view<CameraComponent>();
+		for (auto entity : view)
+		{
+			auto& cameraComponent = view.get<CameraComponent>(entity);
+			if (!cameraComponent.FixedAspectRatio)
+				cameraComponent.Camera.SetViewportSize(width, height);
+		}
 
 	}
 
