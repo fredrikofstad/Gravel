@@ -37,7 +37,35 @@ namespace Gravel {
 		auto& cc = m_secondCamera.AddComponent<CameraComponent>();
 		cc.Primary = false;
 
+		class CameraController : public ScriptableEntity
+		{
+		private:
+			float speed = 5.0f;
+		public:
+			void OnCreate()
+			{
 
+			}
+			void OnUpdate(Timestep deltaTime)
+			{
+				auto& transform = GetComponent<TransformComponent>().Transform;
+
+				if(Input::isKeyPressed(Key::A))
+					transform[3][0] -= speed * deltaTime;
+				if (Input::isKeyPressed(Key::D))
+					transform[3][0] += speed * deltaTime;
+				if (Input::isKeyPressed(Key::W))
+					transform[3][1] += speed * deltaTime;
+				if (Input::isKeyPressed(Key::S))
+					transform[3][1] -= speed * deltaTime;
+			}
+			void OnDestroy()
+			{
+
+			}
+		};
+
+		m_cameraEntity.AddComponent<CodeComponent>().Bind<CameraController>();
 	}
 
 	void EditorLayer::OnDetach()
@@ -161,7 +189,7 @@ namespace Gravel {
 		m_viewportSize = { availableSize.x, availableSize.y };
 
 		RendererID colorID = m_frameBuffer->GetColorAttachment();
-		ImGui::Image((void*)colorID, ImVec2{ (float)m_viewportSize.x, (float)m_viewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 }); //imvec to flip frame
+		ImGui::Image(reinterpret_cast<void*>(colorID), ImVec2{ (float)m_viewportSize.x, (float)m_viewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 }); //imvec to flip frame
 		ImGui::PopStyleVar();
 		ImGui::End();
 

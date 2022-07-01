@@ -7,6 +7,9 @@
 #include <string>
 #include <sstream>
 #include <thread>
+#include <mutex>
+
+#include "Engine/Core/Log.h"
 
 namespace Gravel {
 

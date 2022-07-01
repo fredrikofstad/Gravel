@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include "Engine/Camera/SceneCamera.h"
+#include "ScriptableEntity.h"
 
 namespace Gravel {
 
@@ -46,6 +47,23 @@ namespace Gravel {
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
+	};
+
+	struct CodeComponent
+	{
+		ScriptableEntity* Instance = nullptr;
+
+
+		ScriptableEntity*(*Instantiate)();
+		void (*Destroy)(CodeComponent*);
+
+
+		template<typename T>
+		void Bind()
+		{
+			Instantiate = []() { return static_cast<ScriptableEntity*>(new T()); };
+			Destroy = [](CodeComponent* component) { delete component->Instance; component->Instance = nullptr; };
+		}
 	};
 
 }

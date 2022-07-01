@@ -330,7 +330,7 @@ namespace Gravel {
 		for (uint32_t i = 1; i < s_data.TextureSlotIndex; i++)
 		{
 			//get pointer and then dereference it
-			if (*s_data.TextureSlots[i].get() == *texture.get())
+			if (*s_data.TextureSlots[i] == *texture)
 			{
 				textureIndex = (float)i;
 				break;

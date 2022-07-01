@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Event.h"
+#include "Engine/Core/MouseCodes.h"
 
 namespace Gravel {
 
 	class GRAVEL_API MouseMovedEvent : public Event
 	{
 	public:
-		MouseMovedEvent(float x, float y)
+		MouseMovedEvent(const float x, const float y)
 			: m_mouseX(x), m_mouseY(y) {}
 
 		inline float GetX() const { return m_mouseX; }
@@ -29,11 +30,11 @@ namespace Gravel {
 	class GRAVEL_API MouseScrolledEvent : public Event
 	{
 	public:
-		MouseScrolledEvent(float xOffset, float yOffset)
+		MouseScrolledEvent(const float xOffset, const float yOffset)
 			: m_xOffset(xOffset), m_yOffset(yOffset) {}
 
-		inline float GetXOffset() const { return m_xOffset; }
-		inline float GetYOffset() const { return m_yOffset; }
+		float GetXOffset() const { return m_xOffset; }
+		float GetYOffset() const { return m_yOffset; }
 
 		std::string ToString() const override
 		{
@@ -54,22 +55,22 @@ namespace Gravel {
 	{
 	public:
 
-		inline bool GetMouseButton() const { return m_button; }
+		MouseCode GetMouseButton() const { return m_button; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 
 	protected:
-		MouseButtonEvent(int button)
+		MouseButtonEvent(const MouseCode button)
 			: m_button(button) {}
 
-		int m_button;
+		MouseCode m_button;
 
 	};
 
 	class GRAVEL_API MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonPressedEvent(int button)
+		MouseButtonPressedEvent(const MouseCode button)
 			: MouseButtonEvent(button) {}
 
 		std::string ToString() const override
@@ -85,7 +86,7 @@ namespace Gravel {
 	class GRAVEL_API MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonReleasedEvent(int button)
+		MouseButtonReleasedEvent(const MouseCode button)
 			: MouseButtonEvent(button) {}
 
 		std::string ToString() const override

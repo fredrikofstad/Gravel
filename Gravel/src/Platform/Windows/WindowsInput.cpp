@@ -6,40 +6,32 @@
 
 namespace Gravel {
 
-	bool Input::isKeyPressed(int keycode)
+	bool Input::isKeyPressed(const KeyCode keycode)
 	{
 
-		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		auto state = glfwGetKey(window, keycode);
+		auto* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		auto state = glfwGetKey(window, static_cast<int32_t>(keycode));
 
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
-	bool Input::isMouseButtonPressed(int button)
+	bool Input::isMouseButtonPressed(const MouseCode button)
 	{
-		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		auto state = glfwGetMouseButton(window, button);
+		auto* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		auto state = glfwGetMouseButton(window, static_cast<int32_t>(button));
 		return state == GLFW_PRESS;
 	}
 
-	std::pair<float, float> Input::GetMousePosition()
+	glm::vec2 Input::GetMousePosition()
 	{
-		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		auto* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		return { (float)xpos, (float)ypos };
 	}
 
-	float Input::GetMouseX()
-	{
-		auto[x,y] = GetMousePosition();
-		return x;
-	}
+	float Input::GetMouseX(){ return GetMousePosition().x; }
 
-	float Input::GetMouseY()
-	{
-		auto [x, y] = GetMousePosition();
-		return y;
-	}
+	float Input::GetMouseY() { return GetMousePosition().y; }
 
 }

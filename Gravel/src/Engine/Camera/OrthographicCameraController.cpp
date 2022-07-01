@@ -15,24 +15,24 @@ namespace Gravel {
 
 	void OrthographicCameraController::OnUpdate(Timestep deltaTime)
 	{
-		if (Input::isKeyPressed(GR_KEY_A))
+		if (Input::isKeyPressed(Key::A))
 			m_cameraPosition.x -= m_moveSpeed * deltaTime;
 
-		else if (Input::isKeyPressed(GR_KEY_D))
+		else if (Input::isKeyPressed(Key::D))
 			m_cameraPosition.x += m_moveSpeed * deltaTime;
 
-		if (Input::isKeyPressed(GR_KEY_W))
+		if (Input::isKeyPressed(Key::W))
 			m_cameraPosition.y += m_moveSpeed * deltaTime;
 
-		else if (Input::isKeyPressed(GR_KEY_S))
+		else if (Input::isKeyPressed(Key::S))
 			m_cameraPosition.y -= m_moveSpeed * deltaTime;
 
 		if(m_rotation)
 		{
-			if (Input::isKeyPressed(GR_KEY_Q))
+			if (Input::isKeyPressed(Key::Q))
 				m_cameraRotation += m_rotationSpeed * deltaTime;
 
-			if (Input::isKeyPressed(GR_KEY_E))
+			if (Input::isKeyPressed(Key::E))
 				m_cameraRotation -= m_rotationSpeed * deltaTime;
 		
 			m_camera.SetRotation(m_cameraRotation);

@@ -1,16 +1,19 @@
 #pragma once
 
-#include "Engine/Core/Core.h"
+#include <glm/glm.hpp>
+
+#include "Engine/Core/KeyCodes.h"
+#include "Engine/Core/MouseCodes.h"
 
 namespace Gravel {
 
 	class Input
 	{
 	public:
-		static bool isKeyPressed(int keycode);
-		static bool isMouseButtonPressed(int button);
+		static bool isKeyPressed(KeyCode keycode);
+		static bool isMouseButtonPressed(MouseCode button);
 		static float GetMouseX();
 		static float GetMouseY();
-		static std::pair<float, float> GetMousePosition();
+		static glm::vec2 GetMousePosition();
 	};
 }
