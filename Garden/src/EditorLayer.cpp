@@ -27,8 +27,12 @@ namespace Gravel {
 		m_frameBuffer = FrameBuffer::Create(frameBufferSpecs);
 
 		m_scene = MakeShared<Scene>();
+
 		m_panda = m_scene->CreateEntity("Panda");
 		m_panda.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 0.8f, 0.0f, 1.0f });
+
+		auto redSquare = m_scene->CreateEntity("Red Square");
+		redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
 
 		m_cameraEntity = m_scene->CreateEntity("Camera Entity");
 		m_cameraEntity.AddComponent<CameraComponent>();
@@ -42,10 +46,6 @@ namespace Gravel {
 		private:
 			float speed = 5.0f;
 		public:
-			void OnCreate()
-			{
-
-			}
 			void OnUpdate(Timestep deltaTime)
 			{
 				auto& transform = GetComponent<TransformComponent>().Transform;
@@ -59,13 +59,11 @@ namespace Gravel {
 				if (Input::isKeyPressed(Key::S))
 					transform[3][1] -= speed * deltaTime;
 			}
-			void OnDestroy()
-			{
-
-			}
 		};
 
 		m_cameraEntity.AddComponent<CodeComponent>().Bind<CameraController>();
+
+		m_hierarchyPanel.SetScene(m_scene);
 	}
 
 	void EditorLayer::OnDetach()
@@ -194,6 +192,7 @@ namespace Gravel {
 		ImGui::End();
 
 
+		m_hierarchyPanel.OnImguiRender();
 
 		ImGui::Begin("Settings");
 

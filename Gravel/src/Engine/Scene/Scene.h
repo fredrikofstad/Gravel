@@ -22,7 +22,9 @@ namespace Gravel {
 	private:
 		entt::registry m_registry;
 		uint32_t m_viewportWidth = 0, m_viewportHeight = 0;
+
 		friend class Entity;
+		friend class HierarchyPanel;
 	};
 
 }

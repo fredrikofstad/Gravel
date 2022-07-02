@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Gravel.h>
+#include "Panels/HierarchyPanel.h"
 
 namespace Gravel {
 
@@ -32,6 +33,10 @@ namespace Gravel {
 
 		bool m_viewportFocused = false, m_viewportHovered = false;
 		glm::vec2 m_viewportSize = {0,0};
+
+		// panels
+
+		HierarchyPanel m_hierarchyPanel;
 
 	};
 
