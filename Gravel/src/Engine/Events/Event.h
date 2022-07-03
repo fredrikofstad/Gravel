@@ -64,7 +64,7 @@ namespace Gravel {
 		{
 			if (m_event.GetEventType() == T::GetStaticType())
 			{
-				m_event.Handled = func(*(T*)&m_event);
+				m_event.Handled |= func(*(T*)&m_event);
 				return true;
 			}
 			return false;

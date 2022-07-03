@@ -28,16 +28,16 @@ namespace Gravel {
 
 		m_scene = MakeShared<Scene>();
 
-		m_panda = m_scene->CreateEntity("Panda");
+		m_panda = m_scene->CreateEntity("Square");
 		m_panda.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 0.8f, 0.0f, 1.0f });
 
-		auto redSquare = m_scene->CreateEntity("Red Square");
+		auto redSquare = m_scene->CreateEntity("Square 2");
 		redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
 
-		m_cameraEntity = m_scene->CreateEntity("Camera Entity");
+		m_cameraEntity = m_scene->CreateEntity("Camera Entity A");
 		m_cameraEntity.AddComponent<CameraComponent>();
 
-		m_secondCamera = m_scene->CreateEntity("Clip-Space Entity");
+		m_secondCamera = m_scene->CreateEntity("Camera Entity B");
 		auto& cc = m_secondCamera.AddComponent<CameraComponent>();
 		cc.Primary = false;
 
@@ -46,18 +46,25 @@ namespace Gravel {
 		private:
 			float speed = 5.0f;
 		public:
+
+			virtual void OnCreate() override
+			{
+				auto& translation = GetComponent<TransformComponent>().Position;
+				translation.x = rand() % 10 - 5.0f;
+			}
+
 			void OnUpdate(Timestep deltaTime)
 			{
-				auto& transform = GetComponent<TransformComponent>().Transform;
+				auto& position = GetComponent<TransformComponent>().Position;
 
 				if(Input::isKeyPressed(Key::A))
-					transform[3][0] -= speed * deltaTime;
+					position.x -= speed * deltaTime;
 				if (Input::isKeyPressed(Key::D))
-					transform[3][0] += speed * deltaTime;
+					position.x += speed * deltaTime;
 				if (Input::isKeyPressed(Key::W))
-					transform[3][1] += speed * deltaTime;
+					position.y += speed * deltaTime;
 				if (Input::isKeyPressed(Key::S))
-					transform[3][1] -= speed * deltaTime;
+					position.y -= speed * deltaTime;
 			}
 		};
 
@@ -204,36 +211,6 @@ namespace Gravel {
 		ImGui::Text("Indices: %d", statistics.GetTotalIndexCount());
 		ImGui::End();
 
-		ImGui::Begin("Material");
-
-		if (m_panda)
-		{
-			ImGui::Separator();
-			auto& tag = m_panda.GetComponent<TagComponent>().Tag;
-			ImGui::Text("%s", tag.c_str());
-
-			auto& pandaColor = m_panda.GetComponent<SpriteRendererComponent>().Color;
-			ImGui::ColorEdit4("Color", glm::value_ptr(pandaColor));
-			ImGui::Separator();
-		}
-
-		ImGui::DragFloat3("Camera Transform",
-			glm::value_ptr(m_cameraEntity.GetComponent<TransformComponent>().Transform[3]));
-
-		if (ImGui::Checkbox("Camera A", &m_primaryCamera))
-		{
-			m_cameraEntity.GetComponent<CameraComponent>().Primary = m_primaryCamera;
-			m_secondCamera.GetComponent<CameraComponent>().Primary = !m_primaryCamera;
-		}
-
-		{
-			auto& camera = m_secondCamera.GetComponent<CameraComponent>().Camera;
-			float orthoSize = camera.GetOrthographicSize();
-			if (ImGui::DragFloat("Second Camera Ortho Size", &orthoSize))
-				camera.SetOrthographicSize(orthoSize);
-		}
-
-		ImGui::End();
 
 
 		ImGui::End();
