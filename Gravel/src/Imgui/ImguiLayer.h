@@ -23,6 +23,8 @@ namespace Gravel {
 		void Start();
 		void End();
 
+		void SetDarkColors();
+
 		void BlockEvents(bool block) { m_blockEvents = block; }
 
 	private:
