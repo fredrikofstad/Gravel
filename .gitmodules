@@ -10,3 +10,6 @@
 	path = Gravel/thirdparty/GLFW
 	url = https://github.com/fredrikofstad/glfw
 	branch = master
+[submodule "Gravel/thirdparty/yaml-cpp"]
+	path = Gravel/thirdparty/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp
