@@ -2,6 +2,8 @@
 
 #include "Engine/Camera/Camera.h"
 #include "Engine/Camera/OrthographicCamera.h"
+#include "Engine/Camera/GardenCamera.h"
+
 #include "Texture.h"
 #include "SubTexture.h"
 
@@ -15,7 +17,9 @@ namespace Gravel {
 		static void Shutdown();
 
 		static void StartScene(const OrthographicCamera& camera);
+		static void StartScene(const GardenCamera& camera);
 		static void StartScene(const Camera& camera, const glm::mat4& transform);
+
 		static void EndScene();
 		static void Flush();
 

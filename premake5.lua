@@ -16,23 +16,28 @@ IncludeDir["GLWF"] = "Gravel/thirdparty/GLFW/include"
 IncludeDir["Glad"] = "Gravel/thirdparty/Glad/include"
 IncludeDir["entt"] = "Gravel/thirdparty/entt/include"
 IncludeDir["Imgui"] = "Gravel/thirdparty/imgui"
+IncludeDir["Imguizmo"] = "Gravel/thirdparty/imguizmo"
 IncludeDir["glm"] = "Gravel/thirdparty/glm/"
 IncludeDir["stb"] = "Gravel/thirdparty/stb/"
+IncludeDir["yaml_cpp"] = "Gravel/thirdparty/yaml-cpp/include"
+
 
 
 group "Dependencies"
 	include "Gravel/thirdparty/GLFW"
 	include "Gravel/thirdparty/Glad"
 	include "Gravel/thirdparty/imgui"
+	include "Gravel/thirdparty/yaml-cpp"
 
 group ""
+
 
 project "Gravel"
 	location "Gravel"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "c++17"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -44,15 +49,15 @@ project "Gravel"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+
 		"%{prj.name}/thirdparty/stb/**.h",
 		"%{prj.name}/thirdparty/stb/**.cpp",
+
 		"%{prj.name}/thirdparty/glm/glm/**.hpp",
 		"%{prj.name}/thirdparty/glm/glm/**.inl",
-	}
 
-	defines
-	{
-		"_CRT_SECURE_NO_WARNINGS"
+		"%{prj.name}/thirdparty/imguizmo/ImGuizmo.h",
+		"%{prj.name}/thirdparty/imguizmo/ImGuizmo.cpp",
 	}
 
 	includedirs
@@ -63,12 +68,10 @@ project "Gravel"
 		"%{prj.name}/thirdparty/Glad/include",
 		"%{prj.name}/thirdparty/entt/include",
 		"%{prj.name}/thirdparty/imgui",
+		"%{prj.name}/thirdparty/imguizmo",
 		"%{prj.name}/thirdparty/glm",
 		"%{prj.name}/thirdparty/stb",
-
-
-
-		--"%{IncludeDir.GLFW}"
+		"%{prj.name}/thirdparty/yaml-cpp/include",
 	}
 
 	links
@@ -76,8 +79,12 @@ project "Gravel"
 		"GLFW",
 		"Glad",
 		"Imgui",
-		"opengl32.lib"
+		"yaml-cpp",
+		"opengl32.lib",
 	}
+
+	filter "files:Gravel/thirdparty/imguizmo/**.cpp"
+	flags { "NoPCH" }
 
 	filter "system:windows"
 		systemversion "latest"
@@ -86,7 +93,8 @@ project "Gravel"
 		{
 			"GR_PLATFORM_WINDOWS",
 			"GR_BUILD_DLL",
-			"GLFW_INCLUDE_NONE"
+			"GLFW_INCLUDE_NONE",
+			"YAML_CPP_STATIC_DEFINE",
 		}
 
 	filter "configurations:Debug"
@@ -109,7 +117,7 @@ project "Tests"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "c++17"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -166,7 +174,7 @@ project "Garden"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "c++17"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -197,7 +205,8 @@ project "Garden"
 
 		defines
 		{
-			"GR_PLATFORM_WINDOWS"
+			"GR_PLATFORM_WINDOWS",
+			"YAML_CPP_STATIC_DEFINE"
 		}
 
 

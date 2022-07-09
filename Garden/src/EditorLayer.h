@@ -2,6 +2,7 @@
 
 #include <Gravel.h>
 #include "Panels/HierarchyPanel.h"
+#include "Engine/Camera/GardenCamera.h"
 
 namespace Gravel {
 
@@ -15,27 +16,32 @@ namespace Gravel {
 		void OnUpdate(Timestep deltaTime) override;
 		virtual void OnImguiRender() override;
 		virtual void OnEvent(Event& e) override;
+
+	private:
+		bool OnKeyPressed(KeyPressedEvent& e);
+
+		void NewScene();
+		void OpenScene();
+		void SaveSceneAs();
+
 	private:
 
 		Shared<Texture2D> m_iconTexture;
 		Shared<Texture2D> m_defaultTexture;
 
-		OrthographicCameraController m_cameraController;
 		Shared<Scene> m_scene;
-		Entity m_cameraEntity;
-		Entity m_secondCamera;
 
 		bool m_primaryCamera = true;
-
-		Entity m_panda;
+		GardenCamera m_camera;
 
 		Shared<FrameBuffer> m_frameBuffer;
 
 		bool m_viewportFocused = false, m_viewportHovered = false;
 		glm::vec2 m_viewportSize = {0,0};
 
-		// panels
+		int m_gizmoType = -1;
 
+		// panels
 		HierarchyPanel m_hierarchyPanel;
 
 	};

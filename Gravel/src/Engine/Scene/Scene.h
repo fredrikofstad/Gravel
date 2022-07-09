@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Engine/Camera/GardenCamera.h"
+
 #include "entt.hpp"
 #include "Engine/Core/Timestep.h"
 
@@ -16,10 +18,14 @@ namespace Gravel {
 		Entity CreateEntity(const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
 
-		entt::registry& GetRegistry() { return m_registry; }
-
-		void OnUpdate(Timestep deltaTime);
+		void OnUpdateRuntime(Timestep deltaTime);
+		void OnUpdateEditor(Timestep deltaTime, GardenCamera& camera);
+		
 		void OnViewportResize(uint32_t width, uint32_t height);
+
+		entt::registry& GetRegistry() { return m_registry; }
+		Entity GetPrimaryCamera();
+
 	private:
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
@@ -29,6 +35,7 @@ namespace Gravel {
 
 		friend class Entity;
 		friend class HierarchyPanel;
+		friend class SceneSerializer;
 	};
 
 }

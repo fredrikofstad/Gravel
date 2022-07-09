@@ -5,6 +5,8 @@
 #include "backends/imgui_impl_opengl3.cpp"
 
 #include "Engine/Core/Application.h"
+#include "ImGuizmo.h"
+
 
 
 namespace Gravel {
@@ -80,6 +82,7 @@ namespace Gravel {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
 	}
 
 	void ImguiLayer::End()

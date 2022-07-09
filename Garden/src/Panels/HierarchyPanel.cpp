@@ -1,8 +1,14 @@
 #include "HierarchyPanel.h"
 
 #include <Imgui/imgui.h>
-#include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui_internal.h>
+#include <glm/gtc/type_ptr.hpp>
+
+#include <cstring>
+
+#ifdef _MSVC_LANG
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 
 namespace Gravel {
 
@@ -13,6 +19,7 @@ namespace Gravel {
 	void HierarchyPanel::SetScene(const Shared<Scene>& scene)
 	{
 		m_scene = scene;
+		m_selection = {};
 	}
 	void HierarchyPanel::OnImguiRender()
 	{
@@ -204,7 +211,7 @@ namespace Gravel {
 
 			char buffer[256];
 			memset(buffer, 0, sizeof(buffer));
-			strcpy_s(buffer, sizeof(buffer), tag.c_str());
+			std::strncpy(buffer, tag.c_str(), sizeof(buffer));
 			if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
 			{
 				tag = std::string(buffer);
@@ -221,13 +228,19 @@ namespace Gravel {
 		{
 			if (ImGui::MenuItem("Camera"))
 			{
-				m_selection.AddComponent<CameraComponent>();
+				if (!m_selection.HasComponent<CameraComponent>())
+					m_selection.AddComponent<CameraComponent>();
+				else
+					GR_CORE_WARN("This entity already has the Camera Component!");
 				ImGui::CloseCurrentPopup();
 			}
 
 			if (ImGui::MenuItem("Sprite Renderer"))
 			{
-				m_selection.AddComponent<SpriteRendererComponent>();
+				if (!m_selection.HasComponent<SpriteRendererComponent>())
+					m_selection.AddComponent<SpriteRendererComponent>();
+				else
+					GR_CORE_WARN("This entity already has the Sprite Renderer Component!");
 				ImGui::CloseCurrentPopup();
 			}
 

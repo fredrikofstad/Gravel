@@ -127,6 +127,18 @@ namespace Gravel {
 		StartBatch();
 	}
 
+	void Renderer2D::StartScene(const GardenCamera& camera)
+	{
+		GR_PROFILE_FUNCTION();
+
+		glm::mat4 viewProjection = camera.GetViewProjection();
+
+		s_data.Shader->Bind();
+		s_data.Shader->SetMat4("u_viewProjection", viewProjection);
+
+		StartBatch();
+	}
+
 	void Renderer2D::StartScene(const Camera& camera, const glm::mat4& transform)
 	{
 		GR_PROFILE_FUNCTION();

@@ -6,7 +6,7 @@
 
 namespace Gravel {
 
-	bool Input::isKeyPressed(const KeyCode keycode)
+	bool Input::IsKeyPressed(const KeyCode keycode)
 	{
 
 		auto* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
@@ -15,7 +15,7 @@ namespace Gravel {
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
-	bool Input::isMouseButtonPressed(const MouseCode button)
+	bool Input::IsMouseButtonPressed(const MouseCode button)
 	{
 		auto* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		auto state = glfwGetMouseButton(window, static_cast<int32_t>(button));

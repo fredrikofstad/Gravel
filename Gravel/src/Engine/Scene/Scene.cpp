@@ -32,7 +32,7 @@ namespace Gravel {
 		m_registry.destroy(entity);
 	}
 
-	void Scene::OnUpdate(Timestep deltaTime)
+	void Scene::OnUpdateRuntime(Timestep deltaTime)
 	{
 		// update script components
 
@@ -85,6 +85,21 @@ namespace Gravel {
 
 	}
 
+	void Scene::OnUpdateEditor(Timestep deltaTime, GardenCamera& camera)
+	{
+		Renderer2D::StartScene(camera);
+
+		auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+		for (auto entity : group)
+		{
+			auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+
+			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+		}
+
+		Renderer2D::EndScene();
+	}
+
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
 	{
 		m_viewportWidth = width;
@@ -99,6 +114,18 @@ namespace Gravel {
 				cameraComponent.Camera.SetViewportSize(width, height);
 		}
 
+	}
+
+	Entity Scene::GetPrimaryCamera()
+	{
+		auto view = m_registry.view<CameraComponent>();
+		for (auto entity : view)
+		{
+			const auto& camera = view.get<CameraComponent>(entity);
+			if (camera.Primary)
+				return Entity{ entity, this };
+		}
+		return {};
 	}
 
 	template<typename T>

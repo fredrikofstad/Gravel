@@ -2,14 +2,18 @@
 #include "Imgui/imgui.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "Math/Math.h"
+
+#include "Engine/Scene/SceneSerializer.h"
+
+#include "Engine/Utilities/PlatformUtilities.h"
+#include "imguizmo/ImGuizmo.h"
 
 
 namespace Gravel {
 
-
-
 	EditorLayer::EditorLayer()
-		:Layer("Test 2D"), m_cameraController(1280.0f / 720.0f, false)
+		:Layer("Garden")
 	{
 
 	}
@@ -27,48 +31,7 @@ namespace Gravel {
 		m_frameBuffer = FrameBuffer::Create(frameBufferSpecs);
 
 		m_scene = MakeShared<Scene>();
-
-		m_panda = m_scene->CreateEntity("Square");
-		m_panda.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 0.8f, 0.0f, 1.0f });
-
-		auto redSquare = m_scene->CreateEntity("Square 2");
-		redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
-
-		m_cameraEntity = m_scene->CreateEntity("Camera Entity A");
-		m_cameraEntity.AddComponent<CameraComponent>();
-
-		m_secondCamera = m_scene->CreateEntity("Camera Entity B");
-		auto& cc = m_secondCamera.AddComponent<CameraComponent>();
-		cc.Primary = false;
-
-		class CameraController : public ScriptableEntity
-		{
-		private:
-			float speed = 5.0f;
-		public:
-
-			virtual void OnCreate() override
-			{
-				auto& translation = GetComponent<TransformComponent>().Position;
-				translation.x = rand() % 10 - 5.0f;
-			}
-
-			void OnUpdate(Timestep deltaTime)
-			{
-				auto& position = GetComponent<TransformComponent>().Position;
-
-				if(Input::isKeyPressed(Key::A))
-					position.x -= speed * deltaTime;
-				if (Input::isKeyPressed(Key::D))
-					position.x += speed * deltaTime;
-				if (Input::isKeyPressed(Key::W))
-					position.y += speed * deltaTime;
-				if (Input::isKeyPressed(Key::S))
-					position.y -= speed * deltaTime;
-			}
-		};
-
-		m_cameraEntity.AddComponent<CodeComponent>().Bind<CameraController>();
+		m_camera = GardenCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 
 		m_hierarchyPanel.SetScene(m_scene);
 	}
@@ -87,14 +50,16 @@ namespace Gravel {
 			(specification.Width != m_viewportSize.x || specification.Height != m_viewportSize.y))
 		{
 			m_frameBuffer->Resize((uint32_t)m_viewportSize.x, (uint32_t)m_viewportSize.y);
-			m_cameraController.OnResize(m_viewportSize.x, m_viewportSize.y);
+
+			m_camera.SetViewportSize(m_viewportSize.x, m_viewportSize.y);
 
 			m_scene->OnViewportResize((uint32_t)m_viewportSize.x, (uint32_t)m_viewportSize.y);
 		}
 
 		// Setup
-		if (m_viewportFocused)
-			m_cameraController.OnUpdate(deltaTime);
+
+		m_camera.OnUpdate(deltaTime);
+
 
 		Renderer2D::ResetStatistics();
 
@@ -104,7 +69,7 @@ namespace Gravel {
 
 
 		// scene
-		m_scene->OnUpdate(deltaTime);
+		m_scene->OnUpdateEditor(deltaTime, m_camera);
 		m_frameBuffer->Unbind();
 
 	}
@@ -176,6 +141,15 @@ namespace Gravel {
 				// which we can't undo at the moment without finer window depth/z control.
 				//ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen_persistant);
 
+				if (ImGui::MenuItem("New", "Ctrl+N"))
+					NewScene();
+
+				if (ImGui::MenuItem("Open...", "Ctrl+O"))
+					OpenScene();
+
+				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+					SaveSceneAs();
+
 				if (ImGui::MenuItem("Exit")) Application::Get().Close();
 				ImGui::EndMenu();
 			}
@@ -188,22 +162,6 @@ namespace Gravel {
 
 			ImGui::EndMenuBar();
 		}
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
-		ImGui::Begin("Viewport");
-
-		m_viewportFocused = ImGui::IsWindowFocused();
-		m_viewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportFocused || !m_viewportHovered);
-
-		ImVec2 availableSize = ImGui::GetContentRegionAvail();
-		m_viewportSize = { availableSize.x, availableSize.y };
-
-		RendererID colorID = m_frameBuffer->GetColorAttachment();
-		ImGui::Image(reinterpret_cast<void*>(colorID), ImVec2{ (float)m_viewportSize.x, (float)m_viewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 }); //imvec to flip frame
-		ImGui::PopStyleVar();
-		ImGui::End();
-
 
 		m_hierarchyPanel.OnImguiRender();
 
@@ -218,6 +176,74 @@ namespace Gravel {
 		ImGui::End();
 
 
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+		ImGui::Begin("Viewport");
+
+		m_viewportFocused = ImGui::IsWindowFocused();
+		m_viewportHovered = ImGui::IsWindowHovered();
+		Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportFocused && !m_viewportHovered);
+
+		ImVec2 availableSize = ImGui::GetContentRegionAvail();
+		m_viewportSize = { availableSize.x, availableSize.y };
+
+		RendererID colorID = m_frameBuffer->GetColorAttachment();
+		ImGui::Image(reinterpret_cast<void*>(colorID), ImVec2{ (float)m_viewportSize.x, (float)m_viewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 }); //imvec to flip frame
+		
+		//Gizmo
+
+		Entity selectedEntity = m_hierarchyPanel.GetSelected();
+		if (selectedEntity && m_gizmoType != -1)
+		{
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+
+			float windowWidth = (float)ImGui::GetWindowWidth();
+			float windowHeight = (float)ImGui::GetWindowHeight();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+			// Runtime Camera
+			/*
+			auto cameraEntity = m_scene->GetPrimaryCamera();
+			const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+			const glm::mat4& cameraProjection = camera.GetProjection();
+			glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+			*/
+
+			// Editor camera
+			const glm::mat4& cameraProjection = m_camera.GetProjection();
+			glm::mat4 cameraView = m_camera.GetViewMatrix();
+
+			// Entity transform
+			auto& tc = selectedEntity.GetComponent<TransformComponent>();
+			glm::mat4 transform = tc.GetTransform();
+
+			// Snapping
+			bool snap = Input::IsKeyPressed(Key::LeftControl);
+			float snapValue = 0.5f; // Snap to 0.5m for translation/scale
+			// Snap to 45 degrees for rotation
+			if (m_gizmoType == ImGuizmo::OPERATION::ROTATE)
+				snapValue = 45.0f;
+
+			float snapValues[3] = { snapValue, snapValue, snapValue };
+
+			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+				(ImGuizmo::OPERATION)m_gizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+				nullptr, snap ? snapValues : nullptr);
+
+			if (ImGuizmo::IsUsing())
+			{
+				glm::vec3 translation, rotation, scale;
+				Math::DecomposeTransform(transform, translation, rotation, scale);
+
+				glm::vec3 deltaRotation = rotation - tc.Rotation;
+				tc.Position = translation;
+				tc.Rotation += deltaRotation;
+				tc.Scale = scale;
+			}
+		}
+		
+		ImGui::PopStyleVar();
+		ImGui::End();
 
 		ImGui::End();
 
@@ -225,7 +251,85 @@ namespace Gravel {
 
 	void EditorLayer::OnEvent(Event& e)
 	{
-		m_cameraController.OnEvent(e);
+		m_camera.OnEvent(e);
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<KeyPressedEvent>(GR_BIND_EVENT(EditorLayer::OnKeyPressed));
+	}
+
+	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
+	{
+		// Shortcuts
+		if (e.GetRepeatCount() > 0)
+			return false;
+
+		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+		switch (e.GetKeyCode())
+		{
+			case Key::N:
+			{
+				if (control)
+					NewScene();
+
+				break;
+			}
+			case Key::O:
+			{
+				if (control)
+					OpenScene();
+
+				break;
+			}
+			case Key::S:
+			{
+				if (control && shift)
+					SaveSceneAs();
+				//gizmo
+				m_gizmoType = ImGuizmo::OPERATION::SCALE;
+				break;
+			}
+			// Gizmos
+			case Key::A:
+				m_gizmoType = -1;
+				break;
+			case Key::M:
+				m_gizmoType = ImGuizmo::OPERATION::TRANSLATE;
+				break;
+			case Key::R:
+				m_gizmoType = ImGuizmo::OPERATION::ROTATE;
+				break;
+		}
+	}
+
+	void EditorLayer::NewScene()
+	{
+		m_scene = MakeShared<Scene>();
+		m_scene->OnViewportResize((uint32_t)m_viewportSize.x, (uint32_t)m_viewportSize.y);
+		m_hierarchyPanel.SetScene(m_scene);
+	}
+
+	void EditorLayer::OpenScene()
+	{
+		std::optional<std::string> filepath = FileDialogs::OpenFile("Garden Scene (*.zen)\0*.zen\0");
+		if (filepath)
+		{
+			m_scene = MakeShared<Scene>();
+			m_scene->OnViewportResize((uint32_t)m_viewportSize.x, (uint32_t)m_viewportSize.y);
+			m_hierarchyPanel.SetScene(m_scene);
+
+			SceneSerializer serializer(m_scene);
+			serializer.Deserialize(*filepath);
+		}
+	}
+
+	void EditorLayer::SaveSceneAs()
+	{
+		std::optional<std::string> filepath = FileDialogs::SaveFile("Garden Scene (*.zen)\0*.zen\0");
+		if (filepath)
+		{
+			SceneSerializer serializer(m_scene);
+			serializer.Serialize(*filepath);
+		}
 	}
 
 }
