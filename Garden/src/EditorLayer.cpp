@@ -26,6 +26,8 @@ namespace Gravel {
 		m_defaultTexture = Texture2D::Create("res/textures/default.png");
 
 		FrameBufferSpecification frameBufferSpecs;
+		frameBufferSpecs.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
+
 		frameBufferSpecs.Width = 1280;
 		frameBufferSpecs.Height = 720;
 		m_frameBuffer = FrameBuffer::Create(frameBufferSpecs);
@@ -67,9 +69,27 @@ namespace Gravel {
 		RenderInstruction::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		RenderInstruction::Clear();
 
+		m_frameBuffer->ClearAttachment(1, -1);
+
 
 		// scene
 		m_scene->OnUpdateEditor(deltaTime, m_camera);
+
+		auto [mx, my] = ImGui::GetMousePos();
+		mx -= m_viewportBounds[0].x;
+		my -= m_viewportBounds[0].y;
+		glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
+		my = viewportSize.y - my;
+		int mouseX = (int)mx;
+		int mouseY = (int)my;
+
+		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+		{
+			int pixelData = m_frameBuffer->ReadPixel(1, mouseX, mouseY);
+			m_hoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_scene.get());
+
+		}
+
 		m_frameBuffer->Unbind();
 
 	}
@@ -167,6 +187,11 @@ namespace Gravel {
 
 		ImGui::Begin("Settings");
 
+		std::string name = "None";
+		if (m_hoveredEntity)
+			name = m_hoveredEntity.GetComponent<TagComponent>().Tag;
+		ImGui::Text("Hovered Entity: %s", name.c_str());
+
 		auto statistics = Renderer2D::GetStatistics();
 		ImGui::Text("Renderer2D statistics:");
 		ImGui::Text("Draw Calls: %d", statistics.DrawCalls);
@@ -179,6 +204,13 @@ namespace Gravel {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 		ImGui::Begin("Viewport");
 
+		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+		auto viewportOffset = ImGui::GetWindowPos();
+		m_viewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+		m_viewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+
+
 		m_viewportFocused = ImGui::IsWindowFocused();
 		m_viewportHovered = ImGui::IsWindowHovered();
 		Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportFocused && !m_viewportHovered);
@@ -189,6 +221,7 @@ namespace Gravel {
 		RendererID colorID = m_frameBuffer->GetColorAttachment();
 		ImGui::Image(reinterpret_cast<void*>(colorID), ImVec2{ (float)m_viewportSize.x, (float)m_viewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 }); //imvec to flip frame
 		
+
 		//Gizmo
 
 		Entity selectedEntity = m_hierarchyPanel.GetSelected();
@@ -199,7 +232,7 @@ namespace Gravel {
 
 			float windowWidth = (float)ImGui::GetWindowWidth();
 			float windowHeight = (float)ImGui::GetWindowHeight();
-			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+			ImGuizmo::SetRect(m_viewportBounds[0].x, m_viewportBounds[0].y, m_viewportBounds[1].x - m_viewportBounds[0].x, m_viewportBounds[1].y - m_viewportBounds[0].y);
 
 			// Runtime Camera
 			/*
@@ -254,6 +287,8 @@ namespace Gravel {
 		m_camera.OnEvent(e);
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(GR_BIND_EVENT(EditorLayer::OnKeyPressed));
+		dispatcher.Dispatch<MouseButtonPressedEvent>(GR_BIND_EVENT(EditorLayer::OnMouseButtonPressed));
+
 	}
 
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
@@ -285,20 +320,40 @@ namespace Gravel {
 				if (control && shift)
 					SaveSceneAs();
 				//gizmo
-				m_gizmoType = ImGuizmo::OPERATION::SCALE;
+				if (!ImGuizmo::IsUsing())
+					m_gizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
 			}
 			// Gizmos
 			case Key::A:
-				m_gizmoType = -1;
+			{
+				if (!ImGuizmo::IsUsing())
+					m_gizmoType = -1;
 				break;
+			}
 			case Key::M:
-				m_gizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			{
+				if (!ImGuizmo::IsUsing())
+					m_gizmoType = ImGuizmo::OPERATION::TRANSLATE;
 				break;
+			}
 			case Key::R:
-				m_gizmoType = ImGuizmo::OPERATION::ROTATE;
+			{
+				if (!ImGuizmo::IsUsing())
+					m_gizmoType = ImGuizmo::OPERATION::ROTATE;
 				break;
+			}
 		}
+	}
+
+	bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+	{
+		if (e.GetMouseButton() == Mouse::ButtonLeft)
+		{
+			if (m_viewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))
+				m_hierarchyPanel.SetSelected(m_hoveredEntity);
+		}
+		return false;
 	}
 
 	void EditorLayer::NewScene()

@@ -22,6 +22,7 @@ namespace Gravel {
 
 	private:
 		uint32_t m_rendererID;
+		uint32_t m_vertexBufferIndex = 0;
 		std::vector<Shared<VertexBuffer>> m_vertexBuffers;
 		Shared<IndexBuffer> m_indexBuffer;
 	};

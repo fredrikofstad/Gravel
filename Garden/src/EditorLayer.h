@@ -19,6 +19,7 @@ namespace Gravel {
 
 	private:
 		bool OnKeyPressed(KeyPressedEvent& e);
+		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
 		void NewScene();
 		void OpenScene();
@@ -33,11 +34,14 @@ namespace Gravel {
 
 		bool m_primaryCamera = true;
 		GardenCamera m_camera;
+		Entity m_hoveredEntity;
 
 		Shared<FrameBuffer> m_frameBuffer;
 
 		bool m_viewportFocused = false, m_viewportHovered = false;
 		glm::vec2 m_viewportSize = {0,0};
+		glm::vec2 m_viewportBounds[2];
+
 
 		int m_gizmoType = -1;
 

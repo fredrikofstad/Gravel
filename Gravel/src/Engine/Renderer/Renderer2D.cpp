@@ -17,6 +17,7 @@ namespace Gravel {
 		float TextureIndex;
 		float Tiling;
 
+		int EntityID;
 	};
 
 	struct RendererData
@@ -60,6 +61,7 @@ namespace Gravel {
 			{ AttributeType::Float2, "a_textureCoordinates" },
 			{ AttributeType::Float, "a_textureIndex" },
 			{ AttributeType::Float, "a_tiling" },
+			{ AttributeType::Int, "a_entityID" }
 		};
 		// set layout vefore adding buffer to array!
 		s_data.VertexBuffer->SetLayout(layout);
@@ -289,7 +291,7 @@ namespace Gravel {
 
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityID)
 	{
 		if (s_data.IndexCount >= s_data.MaxIndices)
 		{
@@ -312,6 +314,8 @@ namespace Gravel {
 			s_data.BufferPointer->TextureCooridates = textureCoordinates[i];
 			s_data.BufferPointer->TextureIndex = textureIndex;
 			s_data.BufferPointer->Tiling = tiling;
+			s_data.BufferPointer->EntityID = entityID;
+
 			s_data.BufferPointer++;
 		}
 
@@ -323,7 +327,7 @@ namespace Gravel {
 
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Shared<Texture2D>& texture, float tiling, const glm::vec4& tintColor)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Shared<Texture2D>& texture, float tiling, const glm::vec4& tintColor, int entityID)
 	{
 		GR_PROFILE_FUNCTION();
 
@@ -356,7 +360,7 @@ namespace Gravel {
 			s_data.TextureSlotIndex++;
 		}
 
-		DrawQuadBody(transform, textureIndex, tiling, tintColor, textureCoordinates);
+		DrawQuadBody(transform, textureIndex, tiling, tintColor, textureCoordinates, entityID);
 
 	}
 
@@ -452,6 +456,11 @@ namespace Gravel {
 
 	}
 
+	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityID)
+	{
+		DrawQuad(transform, src.Color, entityID);
+	}
+	
 	Renderer2D::Statistics Renderer2D::GetStatistics()
 	{
 		return s_data.Statistics;
@@ -463,7 +472,7 @@ namespace Gravel {
 	}
 
 
-	void Renderer2D::DrawQuadBody(const glm::mat4 transform, float textureIndex, float tiling, const glm::vec4& tintColor, const glm::vec2 textureCoordinates[])
+	void Renderer2D::DrawQuadBody(const glm::mat4 transform, float textureIndex, float tiling, const glm::vec4& tintColor, const glm::vec2 textureCoordinates[], int entityID)
 	{
 		GR_PROFILE_FUNCTION();
 
@@ -477,6 +486,7 @@ namespace Gravel {
 			s_data.BufferPointer->TextureCooridates = textureCoordinates[i];
 			s_data.BufferPointer->TextureIndex = textureIndex;
 			s_data.BufferPointer->Tiling = tiling;
+			s_data.BufferPointer->EntityID = entityID;
 			s_data.BufferPointer++;
 		}
 

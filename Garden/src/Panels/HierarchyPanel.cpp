@@ -52,6 +52,10 @@ namespace Gravel {
 		}
 		ImGui::End();
 	}
+	void HierarchyPanel::SetSelected(Entity entity)
+	{
+		m_selection = entity;
+	}
 	void HierarchyPanel::DrawEntityNode(Entity entity)
 	{
 		auto& tag = entity.GetComponent<TagComponent>().Tag;

@@ -15,6 +15,7 @@ namespace Gravel {
 		void OnImguiRender();
 
 		Entity GetSelected() const { return m_selection; }
+		void SetSelected(Entity entity);
 
 	private:
 

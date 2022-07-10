@@ -56,20 +56,65 @@ namespace Gravel {
 
 		for (const auto& attribute : layout)
 		{
-			glEnableVertexAttribArray(attributeIndex);
-			glVertexAttribPointer(
-				attributeIndex,
-				attribute.GetCount(),
-				AttributeToGLType(attribute.Type),
-				attribute.Normalized ? GL_TRUE : GL_FALSE,
-				layout.GetStride(),
-				(const void*)attribute.Offset
-			);
-			attributeIndex++;
+			switch (attribute.Type)
+			{
+			case AttributeType::Float:
+			case AttributeType::Float2:
+			case AttributeType::Float3:
+			case AttributeType::Float4:
+			{
+				glEnableVertexAttribArray(m_vertexBufferIndex);
+				glVertexAttribPointer(m_vertexBufferIndex,
+					attribute.GetCount(),
+					AttributeToGLType(attribute.Type),
+					attribute.Normalized ? GL_TRUE : GL_FALSE,
+					layout.GetStride(),
+					(const void*)attribute.Offset);
+				m_vertexBufferIndex++;
+				break;
+			}
+			case AttributeType::Int:
+			case AttributeType::Int2:
+			case AttributeType::Int3:
+			case AttributeType::Int4:
+			case AttributeType::Bool:
+			{
+				glEnableVertexAttribArray(m_vertexBufferIndex);
+				glVertexAttribIPointer(m_vertexBufferIndex,
+					attribute.GetCount(),
+					AttributeToGLType(attribute.Type),
+					layout.GetStride(),
+					(const void*)attribute.Offset);
+				m_vertexBufferIndex++;
+				break;
+			}
+			case AttributeType::Mat3:
+			case AttributeType::Mat4:
+			{
+				uint8_t count = attribute.GetCount();
+				for (uint8_t i = 0; i < count; i++)
+				{
+					glEnableVertexAttribArray(m_vertexBufferIndex);
+					glVertexAttribPointer(m_vertexBufferIndex,
+						count,
+						AttributeToGLType(attribute.Type),
+						attribute.Normalized ? GL_TRUE : GL_FALSE,
+						layout.GetStride(),
+						(const void*)(attribute.Offset + sizeof(float) * count * i));
+					glVertexAttribDivisor(m_vertexBufferIndex, 1);
+					m_vertexBufferIndex++;
+				}
+				break;
+			}
+			default:
+				GR_CORE_ASSERT(false, "Unknown type");
+			}
 		}
 
 		m_vertexBuffers.push_back(vertexBuffer);
 	}
+
+
 	void OpenGLVertexArray::SetIndexBuffer(const Shared<IndexBuffer>& indexBuffer)
 	{
 		glBindVertexArray(m_rendererID);
