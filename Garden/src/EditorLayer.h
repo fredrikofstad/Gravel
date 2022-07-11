@@ -2,6 +2,7 @@
 
 #include <Gravel.h>
 #include "Panels/HierarchyPanel.h"
+#include "Panels/BrowserPanel.h"
 #include "Engine/Camera/GardenCamera.h"
 
 namespace Gravel {
@@ -47,6 +48,7 @@ namespace Gravel {
 
 		// panels
 		HierarchyPanel m_hierarchyPanel;
+		BrowserPanel m_browserPanel;
 
 	};
 

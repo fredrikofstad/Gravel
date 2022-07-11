@@ -184,6 +184,8 @@ namespace Gravel {
 		}
 
 		m_hierarchyPanel.OnImguiRender();
+		m_browserPanel.OnImGuiRender();
+
 
 		ImGui::Begin("Settings");
 
