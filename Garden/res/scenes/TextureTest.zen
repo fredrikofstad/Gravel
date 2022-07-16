@@ -1,0 +1,29 @@
+Scene: Untitled
+Entities:
+  - Entity: 12837192831273
+    TagComponent:
+      Tag: Panda2
+    TransformComponent:
+      Position: [0.500566423, -0.0249402225, -0.577549458]
+      Rotation: [0, 0, 0]
+      Scale: [0.600000024, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+  - Entity: 12837192831273
+    TagComponent:
+      Tag: Logo
+    TransformComponent:
+      Position: [0.0470653027, 0, -0.14618963]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+  - Entity: 12837192831273
+    TagComponent:
+      Tag: Panda
+    TransformComponent:
+      Position: [-0.227771431, 0, 0.347571611]
+      Rotation: [0, 0, 0]
+      Scale: [0.600000024, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]

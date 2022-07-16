@@ -5,22 +5,22 @@
 
 namespace Gravel {
 
-	// Once we have projects, change this
-	static const std::filesystem::path s_resPath = "res";
+	// needs to change to project location
+	extern const std::filesystem::path g_resPath = "res";
 
 	BrowserPanel::BrowserPanel()
-		: m_currentDirectory(s_resPath)
+		: m_currentDirectory(g_resPath)
 	{
 		//consider texture atlas
-		m_folderIcon = Texture2D::Create("res/icons/icon-folder.png");
-		m_fileIcon = Texture2D::Create("res/icons/icon-file.png");
+		m_folderIcon = Texture2D::Create("res/ui/icons/icon-folder.png");
+		m_fileIcon = Texture2D::Create("res/ui/icons/icon-file.png");
 	}
 
 	void BrowserPanel::OnImGuiRender()
 	{
 		ImGui::Begin("File Browser");
 
-		if (m_currentDirectory != std::filesystem::path(s_resPath))
+		if (m_currentDirectory != std::filesystem::path(g_resPath))
 		{
 			if (ImGui::Button("<-"))
 			{
@@ -42,10 +42,22 @@ namespace Gravel {
 		for (auto& directoryEntry : std::filesystem::directory_iterator(m_currentDirectory))
 		{
 			const auto& path = directoryEntry.path();
-			auto relativePath = std::filesystem::relative(path, s_resPath);
+			auto relativePath = std::filesystem::relative(path, g_resPath);
 			std::string filenameString = relativePath.filename().string();
+			ImGui::PushID(filenameString.c_str());
 			Shared<Texture2D> icon = directoryEntry.is_directory() ? m_folderIcon : m_fileIcon;
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 			ImGui::ImageButton((ImTextureID)icon->GetRendererID(), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+
+			if (ImGui::BeginDragDropSource())
+			{
+				const wchar_t* itemPath = relativePath.c_str();
+				ImGui::SetDragDropPayload("BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
+				ImGui::EndDragDropSource();
+			}
+
+			ImGui::PopStyleColor();
+
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			{
 				if (directoryEntry.is_directory())
@@ -55,12 +67,14 @@ namespace Gravel {
 			ImGui::TextWrapped(filenameString.c_str());
 
 			ImGui::NextColumn();
+			ImGui::PopID();
+
 		}
 
 		ImGui::Columns(1);
 
-		ImGui::SliderFloat("Thumbnail Size", &thumbnailSize, 16, 512);
-		ImGui::SliderFloat("Padding", &padding, 0, 32);
+		//ImGui::SliderFloat("Thumbnail Size", &thumbnailSize, 16, 512);
+		//ImGui::SliderFloat("Padding", &padding, 0, 32);
 
 
 		ImGui::End();

@@ -20,10 +20,12 @@ IncludeDir["Imguizmo"] = "Gravel/thirdparty/imguizmo"
 IncludeDir["glm"] = "Gravel/thirdparty/glm/"
 IncludeDir["stb"] = "Gravel/thirdparty/stb/"
 IncludeDir["yaml_cpp"] = "Gravel/thirdparty/yaml-cpp/include"
+IncludeDir["assimp"] = "Gravel/thirdparty/assimp/include"
 
 
 
 group "Dependencies"
+	--include "Gravel/thirdparty/assimp"
 	include "Gravel/thirdparty/GLFW"
 	include "Gravel/thirdparty/Glad"
 	include "Gravel/thirdparty/imgui"
@@ -72,6 +74,8 @@ project "Gravel"
 		"%{prj.name}/thirdparty/glm",
 		"%{prj.name}/thirdparty/stb",
 		"%{prj.name}/thirdparty/yaml-cpp/include",
+		"%{prj.name}/thirdparty/assimp/include",
+		
 	}
 
 	links
@@ -81,6 +85,7 @@ project "Gravel"
 		"Imgui",
 		"yaml-cpp",
 		"opengl32.lib",
+		"assimp"
 	}
 
 	filter "files:Gravel/thirdparty/imguizmo/**.cpp"

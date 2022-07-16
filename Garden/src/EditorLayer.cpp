@@ -12,6 +12,9 @@
 
 namespace Gravel {
 
+	extern const std::filesystem::path g_resPath;
+
+
 	EditorLayer::EditorLayer()
 		:Layer("Garden")
 	{
@@ -24,6 +27,11 @@ namespace Gravel {
 
 		m_iconTexture = Texture2D::Create("res/textures/icon.png");
 		m_defaultTexture = Texture2D::Create("res/textures/default.png");
+
+		m_playIcon = Texture2D::Create("res/ui/icons/icon-play.png");
+		m_stopIcon = Texture2D::Create("res/ui/icons/icon-stop.png");
+
+
 
 		FrameBufferSpecification frameBufferSpecs;
 		frameBufferSpecs.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
@@ -71,9 +79,26 @@ namespace Gravel {
 
 		m_frameBuffer->ClearAttachment(1, -1);
 
+		// modes
+
+		switch (m_sceneState)
+		{
+			case SceneState::Editor:
+			{
+				m_scene->OnUpdateEditor(deltaTime, m_camera);
+				break;
+			}
+
+			case SceneState::Player:
+			{
+				m_scene->OnUpdateRuntime(deltaTime);
+				break;
+			}
+
+		}
+
 
 		// scene
-		m_scene->OnUpdateEditor(deltaTime, m_camera);
 
 		auto [mx, my] = ImGui::GetMousePos();
 		mx -= m_viewportBounds[0].x;
@@ -167,6 +192,9 @@ namespace Gravel {
 				if (ImGui::MenuItem("Open...", "Ctrl+O"))
 					OpenScene();
 
+				if (ImGui::MenuItem("Save", "Ctrl+S"))
+					SaveScene();
+
 				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
 					SaveSceneAs();
 
@@ -223,6 +251,15 @@ namespace Gravel {
 		RendererID colorID = m_frameBuffer->GetColorAttachment();
 		ImGui::Image(reinterpret_cast<void*>(colorID), ImVec2{ (float)m_viewportSize.x, (float)m_viewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 }); //imvec to flip frame
 		
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("BROWSER_ITEM"))
+			{
+				const wchar_t* path = (const wchar_t*)payload->Data;
+				OpenScene(std::filesystem::path(g_resPath) / path);
+			}
+			ImGui::EndDragDropTarget();
+		}
 
 		//Gizmo
 
@@ -280,8 +317,44 @@ namespace Gravel {
 		ImGui::PopStyleVar();
 		ImGui::End();
 
-		ImGui::End();
+		DisplayToolbar();
 
+		ImGui::End();
+	}
+
+
+	void EditorLayer::DisplayToolbar()
+	{
+		//consider making global color scheme
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 5));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 2));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 0.5f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
+
+
+		ImGui::Begin("toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+		
+		float size = ImGui::GetWindowHeight() - 8.0f;
+		Shared<Texture> icon = m_sceneState == SceneState::Editor ? m_playIcon : m_stopIcon;
+		ImGui::SameLine((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+		if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0))
+		{
+			switch (m_sceneState)
+			{
+				case SceneState::Editor:
+					OnScenePlay();
+					break;
+				case SceneState::Player:
+					OnSceneStop();
+					break;
+			}
+		}
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(3);
+
+		
+		ImGui::End();
 	}
 
 	void EditorLayer::OnEvent(Event& e)
@@ -321,6 +394,9 @@ namespace Gravel {
 			{
 				if (control && shift)
 					SaveSceneAs();
+				else if (control)
+					SaveScene();
+
 				//gizmo
 				if (!ImGuizmo::IsUsing())
 					m_gizmoType = ImGuizmo::OPERATION::SCALE;
@@ -369,14 +445,24 @@ namespace Gravel {
 	{
 		std::optional<std::string> filepath = FileDialogs::OpenFile("Garden Scene (*.zen)\0*.zen\0");
 		if (filepath)
-		{
-			m_scene = MakeShared<Scene>();
-			m_scene->OnViewportResize((uint32_t)m_viewportSize.x, (uint32_t)m_viewportSize.y);
-			m_hierarchyPanel.SetScene(m_scene);
+			OpenScene(filepath.value());
+	}
 
-			SceneSerializer serializer(m_scene);
-			serializer.Deserialize(*filepath);
-		}
+	void EditorLayer::OpenScene(const std::filesystem::path& path)
+	{
+		m_currentScenePath = path;
+		m_scene = MakeShared<Scene>();
+		m_scene->OnViewportResize((uint32_t)m_viewportSize.x, (uint32_t)m_viewportSize.y);
+		m_hierarchyPanel.SetScene(m_scene);
+
+		SceneSerializer serializer(m_scene);
+		serializer.Deserialize(m_currentScenePath.string());
+	}
+
+	void EditorLayer::SaveScene()
+	{
+		SceneSerializer serializer(m_scene);
+		serializer.Serialize(m_currentScenePath.string());
 	}
 
 	void EditorLayer::SaveSceneAs()
@@ -388,5 +474,16 @@ namespace Gravel {
 			serializer.Serialize(*filepath);
 		}
 	}
+
+	void EditorLayer::OnScenePlay()
+	{
+		m_sceneState = SceneState::Player;
+	}
+
+	void EditorLayer::OnSceneStop()
+	{
+		m_sceneState = SceneState::Editor;
+	}
+
 
 }

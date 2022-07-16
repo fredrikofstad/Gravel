@@ -24,7 +24,14 @@ namespace Gravel {
 
 		void NewScene();
 		void OpenScene();
+		void OpenScene(const std::filesystem::path& path);
+		void SaveScene();
 		void SaveSceneAs();
+
+		void OnScenePlay();
+		void OnSceneStop();
+
+		void DisplayToolbar();
 
 	private:
 
@@ -32,6 +39,7 @@ namespace Gravel {
 		Shared<Texture2D> m_defaultTexture;
 
 		Shared<Scene> m_scene;
+		std::filesystem::path m_currentScenePath;
 
 		bool m_primaryCamera = true;
 		GardenCamera m_camera;
@@ -49,6 +57,17 @@ namespace Gravel {
 		// panels
 		HierarchyPanel m_hierarchyPanel;
 		BrowserPanel m_browserPanel;
+
+		// editor res
+		Shared<Texture> m_playIcon, m_stopIcon;
+
+
+		enum class SceneState
+		{
+			Editor, Player
+		};
+
+		SceneState m_sceneState = SceneState::Editor;
 
 	};
 

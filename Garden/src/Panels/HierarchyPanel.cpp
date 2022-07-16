@@ -4,6 +4,7 @@
 #include <imgui/imgui_internal.h>
 #include <glm/gtc/type_ptr.hpp>
 
+#include<filesystem>
 #include <cstring>
 
 #ifdef _MSVC_LANG
@@ -11,6 +12,8 @@
 #endif
 
 namespace Gravel {
+
+	extern const std::filesystem::path g_resPath;
 
 	HierarchyPanel::HierarchyPanel(const Shared<Scene>& scene)
 	{
@@ -324,6 +327,25 @@ namespace Gravel {
 		DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component)
 			{
 				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+
+				// get default texure
+				//ImGui::ImageButton()
+
+				ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("BROWSER_ITEM"))
+					{
+						const wchar_t* path = (const wchar_t*)payload->Data;
+						std::filesystem::path texturePath = std::filesystem::path(g_resPath) / path;
+						component.Texture = Texture2D::Create(texturePath.string());
+					}
+					ImGui::EndDragDropTarget();
+				}
+
+
+
+				ImGui::DragFloat("Tiling Factor", &component.Tiling, 0.1f, 0.0f, 100.0f);
 			});
 	
 

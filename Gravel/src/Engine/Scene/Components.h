@@ -7,6 +7,7 @@
 
 #include "Engine/Camera/SceneCamera.h"
 #include "ScriptableEntity.h"
+#include "Engine/Renderer/Texture.h"
 
 namespace Gravel {
 
@@ -43,6 +44,8 @@ namespace Gravel {
 	struct SpriteRendererComponent
 	{
 		glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
+		Shared<Texture2D> Texture;
+		float Tiling = 1.0f;
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;

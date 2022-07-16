@@ -7,6 +7,7 @@
 #include "VertexArray.h"
 #include "Shader.h"
 
+
 namespace Gravel {
 
 	struct QuadVertex
@@ -458,7 +459,10 @@ namespace Gravel {
 
 	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityID)
 	{
-		DrawQuad(transform, src.Color, entityID);
+		if (src.Texture)
+			DrawQuad(transform, src.Texture, src.Tiling, src.Color, entityID);
+		else
+			DrawQuad(transform, src.Color, entityID);
 	}
 	
 	Renderer2D::Statistics Renderer2D::GetStatistics()
