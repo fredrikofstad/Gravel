@@ -15,4 +15,4 @@
 	url = https://github.com/jbeder/yaml-cpp
 [submodule "Gravel/thirdparty/assimp"]
 	path = Gravel/thirdparty/assimp
-	url = https://github.com/assimp/assimp.git
+	url = https://github.com/AminAliari/assimp
