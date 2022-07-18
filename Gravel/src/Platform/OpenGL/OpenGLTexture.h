@@ -25,6 +25,8 @@ namespace Gravel {
 		{ 
 			return m_rendererID == ((OpenGLTexture2D&)other).m_rendererID;
 		};
+
+		static GLint LoadTextureFromFile(const char* path, const std::string& directory);
 	private:
 		std::string m_filepath;
 		uint32_t m_width, m_height;

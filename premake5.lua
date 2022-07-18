@@ -25,7 +25,7 @@ IncludeDir["assimp"] = "Gravel/thirdparty/assimp/include"
 
 
 group "Dependencies"
-	--include "Gravel/thirdparty/assimp"
+	include "Gravel/thirdparty/assimp/"
 	include "Gravel/thirdparty/GLFW"
 	include "Gravel/thirdparty/Glad"
 	include "Gravel/thirdparty/imgui"
@@ -75,6 +75,7 @@ project "Gravel"
 		"%{prj.name}/thirdparty/stb",
 		"%{prj.name}/thirdparty/yaml-cpp/include",
 		"%{prj.name}/thirdparty/assimp/include",
+
 		
 	}
 
@@ -197,7 +198,8 @@ project "Garden"
 		"Gravel/thirdparty/",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
-
+		"%{IncludeDir.stb}",
+		"%{IncludeDir.assimp}",
 	}
 
 	links

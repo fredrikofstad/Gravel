@@ -3,6 +3,8 @@
 #include <Imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 #include <glm/gtc/type_ptr.hpp>
+#include "Engine/Renderer/Model.h"
+#include "Engine/Scene/Components.h"
 
 #include<filesystem>
 #include <cstring>
@@ -247,9 +249,19 @@ namespace Gravel {
 				if (!m_selection.HasComponent<SpriteRendererComponent>())
 					m_selection.AddComponent<SpriteRendererComponent>();
 				else
-					GR_CORE_WARN("This entity already has the Sprite Renderer Component!");
+					GR_CORE_WARN("This entity already has a Sprite Renderer Component!");
 				ImGui::CloseCurrentPopup();
 			}
+			
+			if (ImGui::MenuItem("Mesh Renderer"))
+			{
+				if (!m_selection.HasComponent<MeshRendererComponent>())
+					m_selection.AddComponent<MeshRendererComponent>();
+				else
+					GR_CORE_WARN("This entity already has a Mesh Renderer Component!");
+				ImGui::CloseCurrentPopup();
+			}
+			
 
 			ImGui::EndPopup();
 		}
@@ -346,6 +358,13 @@ namespace Gravel {
 
 
 				ImGui::DragFloat("Tiling Factor", &component.Tiling, 0.1f, 0.0f, 100.0f);
+			});
+
+		DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [](auto& component)
+			{
+				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+
+				ImGui::Text("Mesh model");
 			});
 	
 

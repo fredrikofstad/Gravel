@@ -2,6 +2,7 @@
 #include "Renderer2D.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "RenderInstruction.h"
 #include "VertexArray.h"
@@ -38,7 +39,9 @@ namespace Gravel {
 
 		Shared<VertexArray> VertexArray;
 		Shared<VertexBuffer> VertexBuffer;
+		Shared<Shader> Shader3D;
 		Shared<Shader> Shader;
+
 		Shared<Texture2D> WhiteTexture;
 		glm::vec4 VertexPositions[4];
 
@@ -101,7 +104,9 @@ namespace Gravel {
 		for (int32_t i = 0; i < s_data.MaxTextureSlots; i++)
 			samplers[i] = i;
 
+		s_data.Shader3D = Shader::Create("res/shaders/model.glsl");
 		s_data.Shader = Shader::Create("res/shaders/switch.glsl");
+
 		s_data.Shader->Bind();
 		s_data.Shader->SetIntArray("u_textures", samplers, s_data.MaxTextureSlots);
 
@@ -127,6 +132,9 @@ namespace Gravel {
 
 		s_data.Shader->Bind();
 		s_data.Shader->SetMat4("u_viewProjection", camera.GetViewProjectionMatrix());
+		s_data.Shader3D->SetMat4("view", camera.GetViewProjectionMatrix());
+
+
 		StartBatch();
 	}
 
@@ -138,6 +146,9 @@ namespace Gravel {
 
 		s_data.Shader->Bind();
 		s_data.Shader->SetMat4("u_viewProjection", viewProjection);
+		s_data.Shader3D->Bind();
+		s_data.Shader3D->SetMat4("view", viewProjection);
+
 
 		StartBatch();
 	}
@@ -463,6 +474,14 @@ namespace Gravel {
 			DrawQuad(transform, src.Texture, src.Tiling, src.Color, entityID);
 		else
 			DrawQuad(transform, src.Color, entityID);
+	}
+
+	void Renderer2D::DrawMesh(const glm::mat4& transform, MeshRendererComponent& src, int entity)
+	{
+		s_data.Shader3D->Bind();
+		s_data.Shader3D->SetMat4("model", transform);
+		s_data.Shader3D->SetInt("entity", entity);
+		src.Model->Draw(s_data.Shader3D);
 	}
 	
 	Renderer2D::Statistics Renderer2D::GetStatistics()

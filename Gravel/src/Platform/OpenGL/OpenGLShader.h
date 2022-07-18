@@ -25,6 +25,8 @@ namespace Gravel {
 		virtual void SetMat4(const std::string& name, const glm::mat4& matrix) override;
 
 		virtual const std::string& GetName() const override { return m_name; }
+		virtual const RendererID GetProgram() const override { return m_rendererID; }
+
 		void SetUniformInt(const std::string& name, int value);
 		void SetUniformIntArray(const std::string& name, int* values, uint32_t count);
 

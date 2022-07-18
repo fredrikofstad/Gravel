@@ -44,6 +44,7 @@ namespace Gravel {
 		static void DrawRotateQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Shared<SubTexture>& subTexture, float tiling = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
 
 		static void DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityID);
+		static void DrawMesh(const glm::mat4& transform, MeshRendererComponent& src, int entity);
 
 
 		//stats

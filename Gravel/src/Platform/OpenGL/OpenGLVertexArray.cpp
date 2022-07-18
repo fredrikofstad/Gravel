@@ -31,7 +31,7 @@ namespace Gravel {
 
 	OpenGLVertexArray::~OpenGLVertexArray()
 	{
-		glDeleteVertexArrays(1, &m_rendererID);
+		glDeleteVertexArrays(1, 0);
 
 	}
 

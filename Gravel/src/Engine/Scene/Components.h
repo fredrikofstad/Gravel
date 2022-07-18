@@ -8,6 +8,7 @@
 #include "Engine/Camera/SceneCamera.h"
 #include "ScriptableEntity.h"
 #include "Engine/Renderer/Texture.h"
+#include "Engine/Renderer/Model.h"
 
 namespace Gravel {
 
@@ -51,6 +52,19 @@ namespace Gravel {
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
 		SpriteRendererComponent(const glm::vec4& color)
 			: Color(color) {}
+	};
+
+	struct MeshRendererComponent
+	{
+		glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
+		Shared<Model> Model = MakeShared<Gravel::Model>("res/meshes/nanosuit/nanosuit.obj");
+
+		MeshRendererComponent() = default;
+		MeshRendererComponent(const MeshRendererComponent&) = default;
+		MeshRendererComponent(const glm::vec4& color)
+			: Color(color) {}
+		//MeshRendererComponent(Shared<Model> model)
+		//	: Model(model) {}
 	};
 
 	struct CameraComponent

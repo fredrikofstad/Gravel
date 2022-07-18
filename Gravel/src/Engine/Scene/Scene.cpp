@@ -88,13 +88,20 @@ namespace Gravel {
 	void Scene::OnUpdateEditor(Timestep deltaTime, GardenCamera& camera)
 	{
 		Renderer2D::StartScene(camera);
-
-		auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+		/*auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 		for (auto entity : group)
 		{
 			auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
 			Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
+		}*/
+
+		auto meshGroup = m_registry.group<TransformComponent>(entt::get<MeshRendererComponent>);
+		for (auto entity : meshGroup)
+		{
+			auto [transform, mesh] = meshGroup.get<TransformComponent, MeshRendererComponent>(entity);
+			//should either change renderer or make renderer 2D into just renderer
+			Renderer2D::DrawMesh(transform.GetTransform(), mesh, (int)entity);
 		}
 
 		Renderer2D::EndScene();
@@ -147,6 +154,11 @@ namespace Gravel {
 
 	template<>
 	void Scene::OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
+	{
+	}
+
+	template<>
+	void Scene::OnComponentAdded<MeshRendererComponent>(Entity entity, MeshRendererComponent& component)
 	{
 	}
 

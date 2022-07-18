@@ -20,6 +20,7 @@ namespace Gravel {
 		virtual void SetMat4(const std::string& name, const glm::mat4& matrix) = 0;
 
 		virtual const std::string& GetName() const = 0;
+		virtual const RendererID GetProgram() const = 0;
 
 		static Shared<Shader> Create(const std::string& filepath);
 		static Shared<Shader> Create(const std::string& name, const std::string& vertexSource, const std::string& fragmentSource);

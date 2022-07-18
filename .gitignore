@@ -372,3 +372,10 @@ FodyWeavers.xsd
 *.filters
 *.user
 *.sln
+/Garden/res/meshes/Kimono.png
+/Garden/res/meshes/Kimono.fbx
+/Garden/res/meshes/Kimono.dae
+/Garden/res/meshes/Kimono.blend
+/Garden/res/meshes/cube.mtl
+/Garden/res/meshes/BlenderCube.mtl
+/Garden/res/meshes/nanosuit
