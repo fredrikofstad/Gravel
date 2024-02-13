@@ -1,8 +1,11 @@
 <p align="center">
     <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/fredrikofstad/Gravel/blob/master/Res/logo/engine.png?raw=True">
+    <source media="(prefers-color-scheme: light)" srcset="https://github.com/fredrikofstad/Gravel/blob/master/Res/logo/engineLight.png?raw=true">
     <img alt="Gravel Engine" src="https://github.com/fredrikofstad/Gravel/blob/master/Res/logo/engine.png?raw=True">
     </picture>
 </p>
+
 
 ## A 3D game Engine written in C++
 
