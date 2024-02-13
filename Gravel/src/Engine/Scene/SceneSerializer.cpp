@@ -6,7 +6,7 @@
 
 #include <fstream>
 
-#include <yaml-cpp/yaml.h>
+#include "C:\Dev\C\Gravel\Gravel\thirdparty\yaml-cpp\include\yaml-cpp\yaml.h"
 
 namespace YAML {
 

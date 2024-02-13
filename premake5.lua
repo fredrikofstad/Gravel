@@ -28,8 +28,8 @@ group "Dependencies"
 	include "Gravel/thirdparty/assimp/"
 	include "Gravel/thirdparty/GLFW"
 	include "Gravel/thirdparty/Glad"
+	include "Gravel/thirdparty/yaml-cpp/"
 	include "Gravel/thirdparty/imgui"
-	include "Gravel/thirdparty/yaml-cpp"
 
 group ""
 
@@ -73,7 +73,7 @@ project "Gravel"
 		"%{prj.name}/thirdparty/imguizmo",
 		"%{prj.name}/thirdparty/glm",
 		"%{prj.name}/thirdparty/stb",
-		"%{prj.name}/thirdparty/yaml-cpp/include",
+		"%{prj.name}/Gravel/thirdparty/yaml-cpp/include",
 		"%{prj.name}/thirdparty/assimp/include",
 
 		
