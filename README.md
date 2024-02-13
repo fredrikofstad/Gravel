@@ -4,7 +4,7 @@
     </picture>
 </p>
 
-## A game 3D Engine written in C++
+## A 3D game Engine written in C++
 
 The Gravel Engine is a 3D renderer and Engine currently in development. The project also includes a GUI editor for the engine titled "Gravel Garden"
 The Engine it self is contained in the "Gravel" directory and the editor in the "Garden" Directory.
